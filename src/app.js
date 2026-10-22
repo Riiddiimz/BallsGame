@@ -87,7 +87,8 @@ function tick(now) {
   stepSimulation(sim,dt,Number(ui.speed.value));
   if (sim.finished) {
     running=false;ui.status.textContent="COMBAT TERMINÉ";ui.start.innerHTML="<span>↻</span> Nouveau combat";
-  } else ui.status.textContent="COMBAT EN COURS";
+    if (recorder?.state==="recording") recorder.stop();
+  } else ui.status.textContent=recorder?.state==="recording"?"ENREGISTREMENT — COMBAT EN COURS":"COMBAT EN COURS";
   draw();refreshStats();
   if (running) raf=requestAnimationFrame(tick);
 }
@@ -114,7 +115,13 @@ ui.record.addEventListener("click",async()=>{
     recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);recordingChunks=[];
     recorder.ondataavailable=(event)=>{if(event.data.size)recordingChunks.push(event.data);};
     recorder.onstop=()=>{const blob=new Blob(recordingChunks,{type:recorder.mimeType||"video/webm"});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="ballsgame-"+(sim?.seed||"combat")+".webm";link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);ui.record.textContent="● Enregistrer WebM";ui.status.textContent="VIDÉO EXPORTÉE";stream.getTracks().forEach(track=>track.stop());};
-    recorder.start();ui.record.textContent="■ Arrêter l’enregistrement";ui.status.textContent="ENREGISTREMENT";
+    recorder.start();
+    newSimulation();
+    running=true;fights++;lastFrame=0;raf=requestAnimationFrame(tick);
+    ui.start.innerHTML="Ⅱ Mettre en pause";
+    ui.record.textContent="■ Arrêter l’enregistrement";
+    ui.status.textContent="ENREGISTREMENT — COMBAT EN COURS";
+    refreshStats();
   } catch {ui.status.textContent="ÉCHEC DE L’ENREGISTREMENT";}
 });
 window.addEventListener("resize",fitCanvas);
