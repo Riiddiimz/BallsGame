@@ -7,12 +7,12 @@
 ## 1. Informations générales
 
 - **Projet :** BallsGame
-- **Dépôt GitHub :** à renseigner après création ou vérification du dépôt officiel.
-- **Branche principale :** à vérifier dans le dépôt.
-- **Branche de travail actuelle :** à vérifier dans le dépôt.
-- **Dernière mise à jour vérifiée :** à renseigner après inspection.
-- **Dernier commit vérifié :** à récupérer depuis Git.
-- **État général :** initialisation et audit nécessaires.
+- **Dépôt GitHub :** https://github.com/Riiddiimz/BallsGame
+- **Branche principale :** `main` (métadonnées GitHub vérifiées).
+- **Branche de travail actuelle :** `audit/initial-repository-inventory` (créée pour cet audit).
+- **Dernière mise à jour vérifiée :** 2026-10-22 — audit initial du dépôt distant.
+- **Dernier commit vérifié avant audit :** `6ff9cde37a58ed2301699f1cd1e030868f1f166c` (`Create SECURITY.md`).
+- **État général :** dépôt accessible, mais code applicatif introuvable via les chemins et outils de lecture disponibles ; audit fonctionnel bloqué jusqu'à localisation du code.
 - **Documentation de référence :** ce fichier `STATE.md`.
 
 ### Principes de développement
@@ -398,3 +398,46 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - Maintenir ce fichier à jour pour qu'un autre agent puisse reprendre le travail sans dépendre de l'historique des conversations.
 
 **Objectif opérationnel :** obtenir une application BallsGame fiable, complète et testée, permettant de configurer des combats de boules, de sélectionner des cartes, d'utiliser des pouvoirs et de produire des vidéos verticales de qualité.
+
+
+## 11. Résultat de l'audit initial — 2026-10-22
+
+### Dépôt et historique vérifiés
+- Dépôt confirmé : `Riiddiimz/BallsGame`, public.
+- Branche par défaut confirmée : `main`. Une recherche des branches retourne `main` uniquement ; aucune branche de développement distincte n'a été trouvée par cet outil.
+- Dernier commit retourné par la recherche d'historique : `6ff9cde37a58ed2301699f1cd1e030868f1f166c` — `Create SECURITY.md` (2026-10-22 11:28:44 UTC).
+- Les trois fichiers de gouvernance ont été lus intégralement : `STATE.md`, `AGENTS.md`, `SECURITY.md`.
+- Les lectures directes de `README.md`, `package.json`, `index.html`, `playwright.config.js` et du chemin `.github/workflows` ont retourné `404 Not Found`. Cela ne prouve pas à lui seul l'absence de tout code dans le dépôt, mais aucun point d'entrée applicatif ni manifeste de dépendances n'a pu être identifié.
+- La recherche de code n'a fourni aucun résultat exploitable ; l'indexation de code du dépôt est signalée comme indisponible.
+- L'outil GitHub disponible dans cette session ne fournit pas de lecture complète de l'arborescence. L'inventaire exhaustif des fichiers et le diff local ne peuvent donc pas être établis ici.
+
+### Comparaison aux critères d'acceptation
+| Domaine | État vérifié | Motif |
+|---|---|---|
+| Démarrage du site | Impossible à vérifier | Aucun point d'entrée ni commande de lancement identifiés |
+| Cartes jouables | Impossible à vérifier | Code du moteur et catalogue des cartes non accessibles |
+| Physique, collisions et pièges | Impossible à vérifier | Code source non identifié |
+| Pouvoirs | Impossible à vérifier | Catalogue et gestionnaire non identifiés |
+| Chronomètre et fin entre 00:58 et 01:05 | Impossible à vérifier | Logique de simulation non identifiée |
+| Export MP4 | Impossible à vérifier | Pipeline d'enregistrement non identifié |
+| Tests automatisés / Playwright | Impossible à vérifier | Aucun manifeste ou fichier de configuration de test accessible |
+| Contrôles de sécurité applicatifs | Non évalués | Pas de code applicatif à inspecter ; aucun audit de dépendances n'a été exécuté |
+
+### Tâches priorisées après audit
+1. **P0 — Retrouver et rendre accessible le code applicatif** : vérifier que le dépôt officiel choisi est bien celui qui contient l'application, ou pousser/relier le code au dépôt attendu. Ne pas créer une application de remplacement à l'aveugle.
+2. **P0 — Obtenir un inventaire complet de l'arborescence et du dernier commit applicatif** : identifier les fichiers de démarrage, dépendances, moteur, cartes, pouvoirs, export vidéo et tests.
+3. **P0 — Exécuter les vérifications de base** : syntaxe/build, tests existants et contrôle de sécurité des dépendances, selon les outils déclarés par le projet.
+4. **P1 — Construire une matrice de tests de non-régression** pour les cartes, pouvoirs, limites de l'arène, chronomètre, fin de combat et export MP4.
+5. **P1 — Corriger le premier défaut reproductible** trouvé par les tests, sans réécriture générale.
+
+### Première tâche concrète effectuée
+- Création de la branche de travail `audit/initial-repository-inventory` depuis `main`.
+- Mise à jour de ce document pour consigner les preuves disponibles, les chemins testés, les limites d'accès et la prochaine action exacte.
+- Aucun code applicatif n'a été modifié : aucun fichier applicatif n'a pu être identifié et il serait risqué d'inventer son architecture.
+- Tests : aucun test applicatif exécuté, faute de point d'entrée/manifeste accessible. Les lectures GitHub et recherches de commits sont des contrôles d'inventaire, pas des tests logiciels.
+- Diff local : impossible à générer avec les outils disponibles dans cette session. Le changement est limité à `STATE.md` sur la branche d'audit.
+
+### Session en cours — reprise
+- **Dernière étape réussie :** lecture des trois documents obligatoires, vérification de la branche par défaut et consultation de l'historique des commits.
+- **Blocage :** code applicatif et inventaire complet du dépôt non accessibles via les outils GitHub disponibles ; les fichiers de démarrage usuels interrogés renvoient 404.
+- **Prochaine action exacte :** obtenir un accès de lecture complet à l'arborescence ou confirmer l'URL/le dépôt qui contient le code source de BallsGame. Dès que le code est accessible, reprendre l'audit P0 et réaliser une correction applicative ciblée.
