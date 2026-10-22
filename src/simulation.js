@@ -20,7 +20,7 @@ export function createRandom(seed) {
   };
 }
 
-export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon", width = 360, height = 640 } = {}) {
+export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon", obstacleCount = 2, width = 360, height = 640 } = {}) {
   const random = createRandom(seed);
   const radius = Math.max(8, Math.min(width, height) * 0.023);
   const balls = [];
@@ -36,12 +36,23 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
       alive: true, hits: 0, health: 100, damageFlash: 0, eliminatedAt: null
     });
   }
-  const obstacles = map === "orbit"
-    ? [{ x: width * 0.5, y: height * 0.5, r: width * 0.105, kind: "ring" }]
-    : map === "neon"
-      ? [{ x: width * 0.28, y: height * 0.38, w: width * 0.25, h: 7 }, { x: width * 0.72, y: height * 0.62, w: width * 0.25, h: 7 }]
-      : [];
-  return { seed: String(seed), map, width, height, balls, obstacles, elapsed: 0, collisions: 0, finished: false, winner: null, damageMultiplier: 1, suddenDeath: false };
+  const safeObstacleCount = Math.max(0, Math.min(10, Math.floor(Number(obstacleCount) || 0)));
+  const obstacles = [];
+  for (let i = 0; i < safeObstacleCount; i++) {
+    if (map === "orbit" && i === 0) {
+      obstacles.push({ x: width * 0.5, y: height * 0.5, r: width * 0.105, kind: "ring" });
+      continue;
+    }
+    const w = width * (0.14 + random() * 0.17);
+    const h = 5 + random() * 5;
+    obstacles.push({
+      x: width * (0.18 + random() * 0.64),
+      y: height * (0.18 + random() * 0.64),
+      w, h, kind: "platform",
+      angle: (Math.floor(random() * 3) - 1) * (map === "neon" ? 0.22 : 0)
+    });
+  }
+  return { seed: String(seed), map, width, height, balls, obstacles, obstacleCount: safeObstacleCount, elapsed: 0, collisions: 0, finished: false, winner: null, damageMultiplier: 1, suddenDeath: false };
 }
 
 function eliminate(ball, elapsed) {
