@@ -7,12 +7,12 @@
 ## 1. Informations générales
 
 - **Projet :** BallsGame
-- **Dépôt GitHub :** à renseigner après création ou vérification du dépôt officiel.
-- **Branche principale :** à vérifier dans le dépôt.
-- **Branche de travail actuelle :** à vérifier dans le dépôt.
-- **Dernière mise à jour vérifiée :** à renseigner après inspection.
-- **Dernier commit vérifié :** à récupérer depuis Git.
-- **État général :** initialisation et audit nécessaires.
+- **Dépôt GitHub :** `Riiddiimz/BallsGame`.
+- **Branche principale :** `main` (vérifiée le 2026-10-22).
+- **Branche de travail :** aucune ; les nouveaux commits sont directement sur `main` conformément à la consigne utilisateur.
+- **Dernière mise à jour vérifiée :** 2026-10-22.
+- **Dernier commit vérifié :** à actualiser depuis l'API GitHub au terme de chaque session.
+- **État général :** première version de l'application web en cours d'implémentation ; contrôles unitaires et navigateur configurés, résultats CI à vérifier.
 - **Documentation de référence :** ce fichier `STATE.md`.
 
 ### Principes de développement
@@ -398,3 +398,42 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - Maintenir ce fichier à jour pour qu'un autre agent puisse reprendre le travail sans dépendre de l'historique des conversations.
 
 **Objectif opérationnel :** obtenir une application BallsGame fiable, complète et testée, permettant de configurer des combats de boules, de sélectionner des cartes, d'utiliser des pouvoirs et de produire des vidéos verticales de qualité.
+
+
+---
+
+## État opérationnel vérifié — 2026-10-22
+
+La section ci-dessous remplace les anciens champs « à déterminer » pour l'état de l'application web initiale. Les spécifications historiques ci-dessus restent utiles comme feuille de route, mais ne décrivent pas toutes des fonctions présentes.
+
+### Code présent sur `main`
+
+- `index.html`, `styles.css` : interface web en français, présentation d'une arène verticale.
+- `src/simulation.js` : générateur de seed déterministe, 2 à 8 boules, obstacles selon la carte, collisions, santé, dégâts, éliminations, dégâts doublés à partir de 50 secondes, mort subite à 58 secondes et résolution d'un gagnant au plus tard à 65 secondes.
+- `src/app.js` : rendu canvas, choix de carte et de nombre de boules, contrôles de simulation, chronomètre indépendant du facteur de vitesse, anneaux de santé, indicateur de dégâts et enregistrement navigateur.
+- `server.mjs` : serveur statique Node.js avec restriction des chemins et en-tête `nosniff`.
+- `package.json` : commandes `start`, `check`, `test` et `test:e2e`.
+- `tests/simulation.test.js` : tests unitaires de reproductibilité, limites, horloge, fin du combat, dégâts et élimination.
+- `tests/browser.test.js` : smoke test Playwright de chargement, contrôles et enregistrement.
+- `.github/workflows/ci.yml` : workflow syntaxe, tests unitaires, installation Chromium et tests navigateur.
+- `README.md` : instructions de lancement et limites connues.
+
+### Limites encore ouvertes
+
+- L'export navigateur actuel est WebM, pas MP4.
+- La mort subite à 65 secondes garantit un seul gagnant en sélectionnant la boule vivante ayant le meilleur état si le combat n'a pas naturellement produit un survivant.
+- La suite Playwright est ajoutée mais ne doit être considérée comme validée qu'après un résultat CI terminé avec succès.
+- La fidélité visuelle, l'accessibilité, la compatibilité navigateur et la sécurité n'ont pas encore fait l'objet d'un audit exhaustif.
+- Les cartes actuellement implémentées sont un prototype de trois cartes, pas le catalogue final.
+
+### Prochaine action exacte
+
+1. Vérifier le workflow GitHub Actions déclenché depuis `main`, notamment l'installation de Chromium et le smoke test Playwright.
+2. Corriger tout échec observé sans désactiver les assertions.
+3. Ajouter des scénarios de test pour les trois cartes et les cas de fin de combat.
+4. Remplacer l'export WebM par une chaîne MP4 vérifiée, ou documenter précisément les limites techniques si aucun encodeur compatible ne peut être utilisé.
+5. Continuer l'implémentation des cartes et du rendu vidéo, en mettant à jour cet état après chaque tâche.
+
+### Règle Git active
+
+La consigne utilisateur la plus récente impose que tout développement futur et tout commit se fasse directement sur `main`. Ne pas créer ni utiliser une autre branche pour le développement. Avant chaque écriture, vérifier l'état actuel de `main`; ne pas réécrire ni supprimer des commits existants.
