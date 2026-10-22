@@ -14,7 +14,7 @@ Run `npm run check`, `npm test`, and `npm run test:e2e` (Playwright + Chromium).
 
 ## Current prototype
 - Vertical 9:16 canvas arena.
-- Three visual maps: Néon Grid, classic arena, and central orbit, with deterministic obstacle layouts and map-specific visuals. Neon Grid adds damaging spike traps when enough obstacles are enabled.
+- Four visual maps: Néon Grid, classic arena, central orbit, and Magma Pit. Layouts are seed-reproducible; Neon Grid has damaging spikes and Magma Pit has a central lava hazard.
 - 2–8 colored balls, configurable speed, 0–10 obstacles, deterministic seed, and a switch to enable or disable power-ups.
 - Start, pause, reset, wall/ball/obstacle collisions, ball health, impact damage and elimination.
 - Winner reveal is held until 58 seconds when only one survivor remains; a deterministic fallback resolves a winner by 65 seconds.
