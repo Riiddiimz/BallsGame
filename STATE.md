@@ -446,7 +446,7 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Le vainqueur n'est plus affiché avant 58 secondes lorsque le combat n'a plus qu'un survivant. La mort subite garantit une résolution au plus tard à 65 secondes.
 - Le serveur statique normalise son chemin racine avant de vérifier les chemins demandés. Avant cette correction, la racine pouvait conserver un séparateur final et faire échouer la vérification de préfixe pour toutes les requêtes.
 - Les tests Playwright contrôlent le chargement, le démarrage/pause, le changement de carte, le réglage du nombre de boules et d'obstacles, la seed, l'enregistrement WebM et le ratio vertical mobile.
-- Dernier CI complet **confirmé réussi** au commit `6ebed84c7180690e7390f32e16cd5de84859c737`, exécution [39775810514](https://github.com/Riiddiimz/BallsGame/actions/runs/39775810514) : syntaxe, tests unitaires, installation Chromium et Playwright réussis.
+- CI complet **confirmé réussi** au commit `99e0f6e0e5dc74de4be18dfdda9b627f491ea422`, exécution [39776728323](https://github.com/Riiddiimz/BallsGame/actions/runs/39776728323) : syntaxe, tests unitaires et smoke test Playwright réussis. Le test spécifique des piques a ensuite été ajouté et reste à valider dans le CI suivant.
 - Des changements plus récents sur la collision des plateformes et son test déterministe sont poussés sur `main`; leurs exécutions CI doivent être vérifiées avant de les déclarer validés.
 - Le dépôt est développé directement sur `main` conformément à la consigne utilisateur. La PR provisoire `#1` a été fermée sans fusion ; aucun développement futur ne doit être effectué sur la branche existante qui avait servi de source pour transférer les fichiers utiles.
 - **Prochaine action exacte :** récupérer le résultat du CI du commit le plus récent ; corriger tout échec, puis poursuivre les cartes et le pipeline MP4 sans présenter WebM comme MP4.
@@ -462,3 +462,11 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Le smoke test Playwright valide le chargement, les commandes, les trois cartes, les réglages, la case des pouvoirs, l'enregistrement/téléchargement et le ratio 9:16 sur mobile.
 - Le workflow CI n'installe plus les paquets système avec `--with-deps`, car cette étape apt a été annulée pendant un téléchargement lent. Chromium est installé directement ; si le runner signale une bibliothèque système manquante, rétablir uniquement les dépendances requises.
 - **Prochaine action exacte :** valider le dernier workflow sur le code incluant le test de téléchargement vidéo, puis ajouter une conversion MP4 fiable pour Chromium si le besoin MP4 doit être garanti sur tous les navigateurs.
+
+
+## 16. Pièges de Néon Grid — 2026-10-22
+
+- À partir de quatre obstacles, Néon Grid génère un piège de piques identifiable par sa silhouette et son rendu rose/rouge lumineux.
+- La zone de collision correspond à la hauteur visible des pointes. Un contact inflige 8 points de dégâts (multiplicateur global inclus), déclenche un flash et repousse la boule selon la normale de la surface.
+- Un test déterministe vérifie la présence du piège, les dégâts et le rebond. Le CI de ce commit doit être contrôlé avant de considérer cette évolution validée.
+- **Prochaine action exacte :** vérifier le workflow du dernier commit sur `main`, puis poursuivre les cartes et le format vidéo.
