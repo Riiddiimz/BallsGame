@@ -76,6 +76,7 @@ function draw() {
       ctx.fillStyle = style.color; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText(style.glyph, pickup.x, pickup.y + 0.5);
     }
+    ctx.textBaseline = "alphabetic";
   }
   if (sim?.elapsed >= 50 && !sim.finished) {
     ctx.fillStyle = "rgba(255,72,100,.14)"; ctx.fillRect(8, 8, W-16, 27);
