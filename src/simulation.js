@@ -59,6 +59,7 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
       x: width * (0.18 + random() * 0.64),
       y: height * (0.18 + random() * 0.64),
       spawnAt: 6 + id * 7.5,
+      expiresAt: 11 + id * 7.5,
       collected: false
     };
   });
@@ -75,7 +76,9 @@ function eliminate(ball, elapsed) {
 function applyPowerups(sim) {
   if (!sim.powersEnabled) return;
   for (const pickup of sim.powerups) {
-    if (pickup.collected || sim.elapsed < pickup.spawnAt) continue;
+    if (pickup.collected) continue;
+    if (sim.elapsed > pickup.expiresAt) { pickup.collected = true; continue; }
+    if (sim.elapsed < pickup.spawnAt) continue;
     for (const ball of sim.balls) {
       if (!ball.alive || Math.hypot(ball.x - pickup.x, ball.y - pickup.y) > ball.r + 12) continue;
       pickup.collected = true;
