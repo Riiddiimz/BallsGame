@@ -76,7 +76,7 @@ test("site loads and core combat controls work without browser errors", { timeou
     await page.waitForFunction(() => document.querySelector("#status")?.textContent.includes("ENREGISTREMENT"));
     assert.equal(await page.locator("#stat-state").textContent(), "RUNNING");
     await page.locator("#record").click();
-    await page.waitForFunction(() => document.querySelector("#record")?.textContent.includes("Enregistrer WebM"), { timeout: 5000 });
+    await page.waitForFunction(() => document.querySelector("#record")?.textContent.includes("Enregistrer vidéo"), { timeout: 5000 });
 
     await page.setViewportSize({ width: 390, height: 844 });
     const arenaBox = await page.locator("#arena-frame").boundingBox();
