@@ -1,4 +1,7 @@
 name: BallsGame CI
+concurrency:
+  group: ballsgame-${{ github.ref }}
+  cancel-in-progress: true
 on:
   push:
     branches: ["**"]
