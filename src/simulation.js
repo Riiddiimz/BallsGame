@@ -108,14 +108,31 @@ export function stepSimulation(sim, dt, speed = 1) {
           if (dot < 0) { ball.vx -= 2 * dot * nx; ball.vy -= 2 * dot * ny; ball.hits++; sim.collisions++; }
         }
       } else {
-        const nearestX = Math.max(obstacle.x - obstacle.w / 2, Math.min(ball.x, obstacle.x + obstacle.w / 2));
-        const nearestY = Math.max(obstacle.y - obstacle.h / 2, Math.min(ball.y, obstacle.y + obstacle.h / 2));
-        const dx = ball.x - nearestX, dy = ball.y - nearestY;
-        if (dx * dx + dy * dy < ball.r * ball.r) {
-          if (Math.abs(dx) > Math.abs(dy)) ball.vx = Math.sign(dx || 1) * Math.abs(ball.vx);
-          else ball.vy = Math.sign(dy || 1) * Math.abs(ball.vy);
-          ball.x += Math.sign(dx || 1) * 2;
-          ball.y += Math.sign(dy || 1) * 2;
+        const left = obstacle.x - obstacle.w / 2, right = obstacle.x + obstacle.w / 2;
+        const top = obstacle.y - obstacle.h / 2, bottom = obstacle.y + obstacle.h / 2;
+        const nearestX = Math.max(left, Math.min(ball.x, right));
+        const nearestY = Math.max(top, Math.min(ball.y, bottom));
+        let dx = ball.x - nearestX, dy = ball.y - nearestY;
+        const distance = Math.hypot(dx, dy);
+        if (distance < ball.r) {
+          if (distance > 0.0001) {
+            const nx = dx / distance, ny = dy / distance;
+            ball.x += nx * (ball.r - distance);
+            ball.y += ny * (ball.r - distance);
+            const dot = ball.vx * nx + ball.vy * ny;
+            if (dot < 0) { ball.vx -= 2 * dot * nx; ball.vy -= 2 * dot * ny; }
+          } else {
+            const exits = [
+              { distance: ball.x - left, x: left - ball.r, y: ball.y, nx: -1, ny: 0 },
+              { distance: right - ball.x, x: right + ball.r, y: ball.y, nx: 1, ny: 0 },
+              { distance: ball.y - top, x: ball.x, y: top - ball.r, nx: 0, ny: -1 },
+              { distance: bottom - ball.y, x: ball.x, y: bottom + ball.r, nx: 0, ny: 1 }
+            ].sort((a, b) => a.distance - b.distance);
+            const exit = exits[0];
+            ball.x = exit.x; ball.y = exit.y;
+            const dot = ball.vx * exit.nx + ball.vy * exit.ny;
+            if (dot < 0) { ball.vx -= 2 * dot * exit.nx; ball.vy -= 2 * dot * exit.ny; }
+          }
           ball.hits++; sim.collisions++;
         }
       }
