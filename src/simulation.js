@@ -39,6 +39,10 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
   const safeObstacleCount = Math.max(0, Math.min(10, Math.floor(Number(obstacleCount) || 0)));
   const obstacles = [];
   for (let i = 0; i < safeObstacleCount; i++) {
+    if (map === "magma" && i === 0) {
+      obstacles.push({ x: width * 0.5, y: height * 0.55, w: width * 0.34, h: height * 0.065, kind: "lava" });
+      continue;
+    }
     if (map === "orbit" && i === 0) {
       obstacles.push({ x: width * 0.5, y: height * 0.5, r: width * 0.105, kind: "ring" });
       continue;
@@ -182,8 +186,9 @@ export function stepSimulation(sim, dt, speed = 1) {
             if (dot < 0) { ball.vx -= 2 * dot * exit.nx; ball.vy -= 2 * dot * exit.ny; }
           }
           ball.hits++; sim.collisions++;
-          if (obstacle.kind === "spikes") {
-            ball.health = Math.max(0, ball.health - 8 * sim.damageMultiplier);
+          if (obstacle.kind === "spikes" || obstacle.kind === "lava") {
+            const hazardDamage = obstacle.kind === "spikes" ? 8 : 5;
+            ball.health = Math.max(0, ball.health - hazardDamage * sim.damageMultiplier);
             ball.damageFlash = 0.2;
             if (ball.health <= 0) eliminate(ball, sim.elapsed);
           }
