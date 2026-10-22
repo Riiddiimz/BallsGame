@@ -10,12 +10,12 @@ Prototype web app for configuring and watching short vertical ball-combat simula
 Run `npm start`, then open http://127.0.0.1:4173.
 
 ## Checks
-Run `npm run check` and `npm test`.
+Run `npm run check`, `npm test`, and `npm run test:e2e` (Playwright + Chromium).
 
 ## Current prototype
 - Vertical 9:16 canvas arena.
-- Three visual maps: Néon Grid, classic arena, and central orbit.
-- 2–8 colored balls, configurable speed and deterministic seed.
+- Three visual maps: Néon Grid, classic arena, and central orbit, with deterministic obstacle layouts and map-specific visuals.
+- 2–8 colored balls, configurable speed, 0–10 obstacles, and deterministic seed.
 - Start, pause, reset, wall/ball/obstacle collisions, ball health, impact damage and elimination.
 - Winner reveal is held until 58 seconds when only one survivor remains; a deterministic fallback resolves a winner by 65 seconds.
 - Damage doubles at 50 seconds; sudden-death mode starts at 58 seconds and resolves a single winner no later than 65 seconds.
