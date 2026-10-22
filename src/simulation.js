@@ -44,15 +44,16 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
   return { seed: String(seed), map, width, height, balls, obstacles, elapsed: 0, collisions: 0, finished: false, winner: null };
 }
 
-export function stepSimulation(sim, dt) {
+export function stepSimulation(sim, dt, speed = 1) {
   if (!sim || sim.finished || !Number.isFinite(dt) || dt <= 0) return sim;
   const step = Math.min(dt, 1 / 20);
   const { width, height } = sim;
   sim.elapsed += step;
+  const movementStep = step * Math.max(0.1, Math.min(3, Number.isFinite(speed) ? speed : 1));
   for (const ball of sim.balls) {
     if (!ball.alive) continue;
-    ball.x += ball.vx * step;
-    ball.y += ball.vy * step;
+    ball.x += ball.vx * movementStep;
+    ball.y += ball.vy * movementStep;
     if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); ball.hits++; sim.collisions++; }
     if (ball.x + ball.r > width) { ball.x = width - ball.r; ball.vx = -Math.abs(ball.vx); ball.hits++; sim.collisions++; }
     if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy = Math.abs(ball.vy); ball.hits++; sim.collisions++; }
