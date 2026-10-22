@@ -17,6 +17,7 @@ Run `npm run check` and `npm test`.
 - Three visual maps: Néon Grid, classic arena, and central orbit.
 - 2–8 colored balls, configurable speed and deterministic seed.
 - Start, pause, reset, wall/ball/obstacle collisions, ball health, impact damage and elimination.
+- Winner reveal is held until 58 seconds when only one survivor remains; a deterministic fallback resolves a winner by 65 seconds.
 - Damage doubles at 50 seconds; sudden-death mode starts at 58 seconds and resolves a single winner no later than 65 seconds.
 - Health rings, impact flashes, and a double-damage / sudden-death banner.
 - Browser recording through MediaRecorder when supported; current export format is WebM, not MP4.
