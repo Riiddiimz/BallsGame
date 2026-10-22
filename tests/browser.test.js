@@ -73,6 +73,11 @@ test("site loads and core combat controls work without browser errors", { timeou
     assert.equal(await page.locator("#stat-state").textContent(), "RUNNING");
     await page.locator("#record").click();
     await page.waitForFunction(() => document.querySelector("#record")?.textContent.includes("Enregistrer WebM"), { timeout: 5000 });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const arenaBox = await page.locator("#arena-frame").boundingBox();
+    assert.ok(arenaBox, "arena frame should remain visible on mobile");
+    assert.ok(Math.abs(arenaBox.width / arenaBox.height - 9 / 16) < 0.03, "arena keeps a vertical 9:16 ratio");
     assert.deepEqual(errors, [], `Browser errors: ${errors.join(" | ")}`);
   } finally {
     if (browser) await browser.close();
