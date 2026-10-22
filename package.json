@@ -1,0 +1,16 @@
+{
+  "name": "ballsgame",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Vertical arena combat simulator for short-form video creation",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/simulation.test.js",
+    "check": "node --check src/simulation.js && node --check src/app.js && node --check server.mjs",
+    "test:e2e": "node --test tests/browser.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
