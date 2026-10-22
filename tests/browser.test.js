@@ -79,7 +79,7 @@ test("site loads and core combat controls work without browser errors", { timeou
     await page.locator("#record").click();
     await page.waitForFunction(() => document.querySelector("#record")?.textContent.includes("Enregistrer vidéo"), { timeout: 5000 });
     const videoDownload = await downloadPromise;
-    assert.match(videoDownload.suggestedFilename(), /\\.(mp4|webm)$/i);
+    assert.match(videoDownload.suggestedFilename(), /\.(mp4|webm)$/i);
 
     await page.setViewportSize({ width: 390, height: 844 });
     const arenaBox = await page.locator("#arena-frame").boundingBox();
