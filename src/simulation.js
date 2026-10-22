@@ -33,7 +33,7 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
       x: width * (0.28 + random() * 0.44),
       y: height * (0.28 + random() * 0.44),
       vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      alive: true, hits: 0
+      alive: true, hits: 0, health: 100, damageFlash: 0, eliminatedAt: null
     });
   }
   const obstacles = map === "orbit"
@@ -41,7 +41,31 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
     : map === "neon"
       ? [{ x: width * 0.28, y: height * 0.38, w: width * 0.25, h: 7 }, { x: width * 0.72, y: height * 0.62, w: width * 0.25, h: 7 }]
       : [];
-  return { seed: String(seed), map, width, height, balls, obstacles, elapsed: 0, collisions: 0, finished: false, winner: null };
+  return { seed: String(seed), map, width, height, balls, obstacles, elapsed: 0, collisions: 0, finished: false, winner: null, damageMultiplier: 1, suddenDeath: false };
+}
+
+function eliminate(ball, elapsed) {
+  ball.health = 0;
+  ball.alive = false;
+  ball.eliminatedAt = elapsed;
+  ball.damageFlash = 0;
+}
+
+function resolveSuddenDeath(sim) {
+  const alive = sim.balls.filter((ball) => ball.alive);
+  const candidates = alive.length ? alive : sim.balls;
+  const winner = [...candidates].sort((a, b) =>
+    b.health - a.health || b.hits - a.hits || a.id - b.id
+  )[0];
+  for (const ball of sim.balls) {
+    if (ball !== winner && ball.alive) eliminate(ball, sim.elapsed);
+  }
+  if (winner) {
+    winner.alive = true;
+    winner.health = Math.max(1, winner.health);
+    sim.winner = winner.id;
+  }
+  sim.finished = true;
 }
 
 export function stepSimulation(sim, dt, speed = 1) {
@@ -49,9 +73,12 @@ export function stepSimulation(sim, dt, speed = 1) {
   const step = Math.min(dt, 1 / 20);
   const { width, height } = sim;
   sim.elapsed += step;
+  sim.damageMultiplier = sim.elapsed >= 50 ? 2 : 1;
+  sim.suddenDeath = sim.elapsed >= 58;
   const movementStep = step * Math.max(0.1, Math.min(3, Number.isFinite(speed) ? speed : 1));
   for (const ball of sim.balls) {
     if (!ball.alive) continue;
+    ball.damageFlash = Math.max(0, ball.damageFlash - step);
     ball.x += ball.vx * movementStep;
     ball.y += ball.vy * movementStep;
     if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); ball.hits++; sim.collisions++; }
@@ -100,16 +127,25 @@ export function stepSimulation(sim, dt, speed = 1) {
       b.x += nx * overlap * 0.5; b.y += ny * overlap * 0.5;
       const relative = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny;
       if (relative < 0) {
-        const impulse = relative;
-        a.vx += impulse * nx; a.vy += impulse * ny;
-        b.vx -= impulse * nx; b.vy -= impulse * ny;
+        const impactSpeed = Math.abs(relative);
+        const damage = Math.min(18, 6 + impactSpeed * 0.05) * sim.damageMultiplier;
+        a.vx += relative * nx; a.vy += relative * ny;
+        b.vx -= relative * nx; b.vy -= relative * ny;
+        a.health = Math.max(0, a.health - damage);
+        b.health = Math.max(0, b.health - damage);
+        a.damageFlash = 0.16; b.damageFlash = 0.16;
+        if (a.health <= 0) eliminate(a, sim.elapsed);
+        if (b.health <= 0) eliminate(b, sim.elapsed);
       }
       a.hits++; b.hits++; sim.collisions++;
     }
   }
-  if (sim.elapsed >= 60 || sim.balls.filter(ball => ball.alive).length <= 1) {
+  const survivors = sim.balls.filter((ball) => ball.alive);
+  if (survivors.length === 1) {
     sim.finished = true;
-    sim.winner = sim.balls.filter(ball => ball.alive).sort((a,b)=>b.hits-a.hits)[0]?.id ?? null;
+    sim.winner = survivors[0].id;
+  } else if (sim.elapsed >= 65) {
+    resolveSuddenDeath(sim);
   }
   return sim;
 }
