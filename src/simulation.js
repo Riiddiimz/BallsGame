@@ -141,7 +141,7 @@ export function stepSimulation(sim, dt, speed = 1) {
     }
   }
   const survivors = sim.balls.filter((ball) => ball.alive);
-  if (survivors.length === 1) {
+  if (survivors.length === 1 && sim.elapsed >= 58) {
     sim.finished = true;
     sim.winner = survivors[0].id;
   } else if (sim.elapsed >= 65) {
