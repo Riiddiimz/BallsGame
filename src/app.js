@@ -161,10 +161,10 @@ ui.record.addEventListener("click",async()=>{
   if (!canvas.captureStream || !window.MediaRecorder) {ui.status.textContent="ENREGISTREMENT NON DISPONIBLE";return;}
   try {
     const stream=canvas.captureStream(30);
-    const mime=["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].find(type=>MediaRecorder.isTypeSupported(type));
+    const mime=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].find(type=>MediaRecorder.isTypeSupported(type));
     recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);recordingChunks=[];
     recorder.ondataavailable=(event)=>{if(event.data.size)recordingChunks.push(event.data);};
-    recorder.onstop=()=>{const blob=new Blob(recordingChunks,{type:recorder.mimeType||"video/webm"});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="ballsgame-"+(sim?.seed||"combat")+".webm";link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);ui.record.textContent="● Enregistrer WebM";ui.status.textContent="VIDÉO EXPORTÉE";stream.getTracks().forEach(track=>track.stop());};
+    recorder.onstop=()=>{const mimeType=recorder.mimeType||"video/webm";const isMp4=mimeType.toLowerCase().includes("mp4");const extension=isMp4?"mp4":"webm";const blob=new Blob(recordingChunks,{type:mimeType});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="ballsgame-"+(sim?.seed||"combat")+"."+extension;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);ui.record.textContent="● Enregistrer vidéo";ui.status.textContent="VIDÉO "+extension.toUpperCase()+" EXPORTÉE";stream.getTracks().forEach(track=>track.stop());};
     recorder.start();
     newSimulation();
     running=true;fights++;lastFrame=0;raf=requestAnimationFrame(tick);
