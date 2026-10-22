@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { get } from "node:http";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium } from "playwright";
 
@@ -19,8 +20,14 @@ test("site loads and core combat controls work without browser errors", { timeou
     for (let attempt = 0; attempt < 50; attempt++) {
       if (server.exitCode !== null) throw new Error(`Server exited early: ${serverOutput}`);
       try {
-        const response = await fetch(`http://127.0.0.1:${port}/`);
-        if (response.ok) { ready = true; break; }
+        const status = await new Promise((resolve) => {
+          const request = get(`http://127.0.0.1:${port}/`, (response) => {
+            response.resume();
+            resolve(response.statusCode);
+          });
+          request.on("error", () => resolve(0));
+        });
+        if (status === 200) { ready = true; break; }
       } catch {}
       await delay(100);
     }
