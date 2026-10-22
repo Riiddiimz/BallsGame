@@ -135,3 +135,17 @@ test("platform collision reflects a ball away from the impacted face", () => {
   assert.ok(ball.vy < 0);
   assert.ok(sim.collisions > 0);
 });
+
+test("double damage and sudden-death flags switch at their exact thresholds", () => {
+  const sim = createSimulation({ seed: "thresholds", count: 2, obstacleCount: 0 });
+  sim.elapsed = 49.97;
+  stepSimulation(sim, 0.02);
+  assert.equal(sim.damageMultiplier, 1);
+  stepSimulation(sim, 0.02);
+  assert.equal(sim.damageMultiplier, 2);
+  sim.elapsed = 57.95;
+  stepSimulation(sim, 0.02);
+  assert.equal(sim.suddenDeath, false);
+  stepSimulation(sim, 0.04);
+  assert.equal(sim.suddenDeath, true);
+});
