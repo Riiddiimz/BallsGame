@@ -41,6 +41,18 @@ function draw() {
   }
   if (sim) for (const o of sim.obstacles) {
     if (o.kind === "ring") continue;
+    if (o.kind === "spikes") {
+      const left = o.x - o.w / 2, right = o.x + o.w / 2, base = o.y + o.h / 2;
+      const count = Math.max(3, Math.floor(o.w / 12));
+      ctx.beginPath(); ctx.moveTo(left, base);
+      for (let i = 0; i < count; i++) {
+        const x0 = left + o.w * i / count, x1 = left + o.w * (i + 0.5) / count, x2 = left + o.w * (i + 1) / count;
+        ctx.lineTo(x1, o.y - o.h * 1.8); ctx.lineTo(x2, base);
+      }
+      ctx.closePath(); ctx.fillStyle = "#7e203f"; ctx.strokeStyle = "#ff5e78"; ctx.lineWidth = 1.5;
+      ctx.shadowColor = "#ff5e78"; ctx.shadowBlur = 11; ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+      continue;
+    }
     if (sim.map === "classic") {
       ctx.fillStyle = "#1a2638"; ctx.strokeStyle = "#8193ad"; ctx.lineWidth = 2;
       ctx.shadowBlur = 0;
