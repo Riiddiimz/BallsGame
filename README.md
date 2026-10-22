@@ -16,7 +16,9 @@ Run `npm run check` and `npm test`.
 - Vertical 9:16 canvas arena.
 - Three visual maps: Néon Grid, classic arena, and central orbit.
 - 2–8 colored balls, configurable speed and deterministic seed.
-- Start, pause, reset, wall/ball/obstacle collisions, 60-second simulation limit.
+- Start, pause, reset, wall/ball/obstacle collisions, ball health, impact damage and elimination.
+- Damage doubles at 50 seconds; sudden-death mode starts at 58 seconds and resolves a single winner no later than 65 seconds.
+- Health rings, impact flashes, and a double-damage / sudden-death banner.
 - Browser recording through MediaRecorder when supported; current export format is WebM, not MP4.
 - No third-party runtime dependencies.
 
