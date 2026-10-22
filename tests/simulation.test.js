@@ -102,3 +102,19 @@ test("a lone survivor is not declared winner before 58 seconds", () => {
   assert.ok(sim.elapsed >= 58 && sim.elapsed <= 65);
   assert.equal(sim.winner, sim.balls[0].id);
 });
+
+test("obstacle count is clamped and obstacle placement is seed-reproducible", () => {
+  const none = createSimulation({ seed: "maps", map: "neon", obstacleCount: 0 });
+  const capped = createSimulation({ seed: "maps", map: "neon", obstacleCount: 99 });
+  const repeat = createSimulation({ seed: "maps", map: "neon", obstacleCount: 99 });
+  assert.equal(none.obstacles.length, 0);
+  assert.equal(capped.obstacles.length, 10);
+  assert.deepEqual(capped.obstacles, repeat.obstacles);
+});
+
+test("each map can be created with zero obstacles", () => {
+  for (const map of ["neon", "classic", "orbit"]) {
+    const sim = createSimulation({ seed: "empty-arena", map, obstacleCount: 0 });
+    assert.equal(sim.obstacles.length, 0, map);
+  }
+});
