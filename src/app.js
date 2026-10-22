@@ -40,8 +40,23 @@ function draw() {
   }
   if (sim) for (const o of sim.obstacles) {
     if (o.kind === "ring") continue;
-    ctx.fillStyle = "#172e42";ctx.strokeStyle="#59e1f4";ctx.lineWidth=1.5;
-    ctx.shadowColor="#59e1f4";ctx.shadowBlur=9;ctx.fillRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);ctx.strokeRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);ctx.shadowBlur=0;
+    if (sim.map === "classic") {
+      ctx.fillStyle = "#1a2638"; ctx.strokeStyle = "#8193ad"; ctx.lineWidth = 2;
+      ctx.shadowBlur = 0;
+    } else if (sim.map === "orbit") {
+      ctx.fillStyle = "#251c42"; ctx.strokeStyle = "#b48aff"; ctx.lineWidth = 1.5;
+      ctx.shadowColor = "#b48aff"; ctx.shadowBlur = 10;
+    } else {
+      ctx.fillStyle = "#172e42"; ctx.strokeStyle = "#59e1f4"; ctx.lineWidth = 1.5;
+      ctx.shadowColor = "#59e1f4"; ctx.shadowBlur = 9;
+    }
+    ctx.fillRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);
+    ctx.strokeRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);
+    if (sim.map === "classic") {
+      ctx.beginPath(); ctx.moveTo(o.x-o.w/2+4,o.y); ctx.lineTo(o.x+o.w/2-4,o.y);
+      ctx.strokeStyle = "#a8b6ca"; ctx.lineWidth = 1; ctx.stroke();
+    }
+    ctx.shadowBlur=0;
   }
   if (sim?.elapsed >= 50 && !sim.finished) {
     ctx.fillStyle = "rgba(255,72,100,.14)"; ctx.fillRect(8, 8, W-16, 27);
