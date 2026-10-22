@@ -12,7 +12,7 @@
 - **Branche de travail actuelle :** `audit/initial-repository-inventory`.
 - **Dernière mise à jour vérifiée :** 2026-10-22 — création du prototype web initial et des tests.
 - **Dernier commit vérifié avant audit :** `6ff9cde37a58ed2301699f1cd1e030868f1f166c` (`Create SECURITY.md`).
-- **État général :** prototype web initial ajouté ; le compteur de simulation est maintenant séparé du facteur de vitesse de déplacement. Fonctionnalités avancées et validation navigateur encore incomplètes.
+- **État général :** prototype web avec trois cartes, seed reproductible, dégâts, éliminations et mort subite ; compteur indépendant de la vitesse. Export MP4 et validation navigateur encore manquants.
 - **Documentation de référence :** ce fichier `STATE.md`.
 
 ### Principes de développement
@@ -461,7 +461,7 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - Animation Canvas, rebonds sur les limites, collisions entre boules et obstacles propres aux cartes.
 - Pause/reprise, réinitialisation, chronomètre de simulation et statistiques de collisions.
 - Enregistrement navigateur en WebM lorsque MediaRecorder et captureStream sont pris en charge.
-- **Limites connues :** export MP4 non implémenté ; aucune élimination crédible des boules n'est encore modélisée ; la fin à 60 secondes écoulées est implémentée côté simulation mais le comportement réel doit encore être testé dans un navigateur ; les tests de navigateur/Playwright n'ont pas été exécutés ; la sécurité et le rendu visuel n'ont pas fait l'objet d'un audit complet.
+- **Limites connues :** export MP4 non implémenté (l'export actuel est WebM) ; la mort subite garantit un gagnant à 65 secondes en choisissant le survivant au meilleur état si les collisions n'ont pas éliminé les autres ; les tests navigateur/Playwright ne sont pas encore exécutés ; la sécurité et le rendu visuel n'ont pas fait l'objet d'un audit complet.
 
 ### Tests et preuve d'exécution
 - Copie locale de vérification créée dans `/tmp/ballsgame` à partir du moteur et des cas de test écrits pour cette version.
@@ -490,3 +490,13 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - **Commits des fichiers :** moteur `e462f98858a60434c5ed9137a5d05df264a8a038`, interface `c55bdc5ae94d6390011acdc70168ef80c08d6140`, test `dd226c8e9cf455534f17bf6616346fd2157d7ae0`.
 - **Validation :** le workflow GitHub Actions a été déclenché pour ces commits ; consulter le run le plus récent avant de déclarer ce correctif validé.
 - **Prochaine tâche concrète :** implémenter et tester une vraie mécanique d'élimination et une condition de victoire fiable, puis ajouter un test navigateur pour les contrôles principaux.
+
+
+## 13. Dégâts, éliminations et mort subite — 2026-10-22
+
+- Chaque boule démarre avec 100 points de vie ; les impacts entre boules qui se rapprochent infligent des dégâts proportionnels à la vitesse de collision, plafonnés avant multiplicateur.
+- Les dégâts sont multipliés par deux à partir de 50 secondes. L'interface affiche l'état de santé autour de chaque boule, un flash à l'impact et un indicateur de mort subite à partir de 58 secondes.
+- Une boule à zéro point de vie est éliminée et cesse d'être simulée. Quand il ne reste qu'une boule, elle est immédiatement déclarée gagnante.
+- À 65 secondes au plus tard, si plusieurs boules restent, la mort subite choisit de façon déterministe la boule vivante ayant le plus de santé, puis le plus de collisions, et élimine les autres. Cette règle de secours garantit une fin, mais ne simule pas une élimination physique naturelle de chaque adversaire.
+- Tests ajoutés : dégâts lors d'une collision frontale, doublement des dégâts après 50 secondes, élimination létale, gagnant unique avant/après l'échéance. Workflow CI du commit d'interface `d455a54536d4527d6964ba0430f7c1ae16b274b1` : contrôle syntaxique et tests unitaires observés réussis dans le job `test` (run [39773622905](https://github.com/Riiddiimz/BallsGame/actions/runs/39773622905)); vérification finale du statut du run encore nécessaire.
+- **Prochaine tâche :** ajouter des tests navigateur Playwright pour le chargement et les contrôles, puis améliorer l'export vidéo et obtenir un vrai MP4 sans annoncer WebM comme MP4.
