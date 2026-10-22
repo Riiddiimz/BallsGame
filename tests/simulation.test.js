@@ -44,3 +44,14 @@ test("seed hashing and random generation are deterministic", () => {
   const a=createRandom("same"),b=createRandom("same");
   assert.deepEqual([a(),a(),a()],[b(),b(),b()]);
 });
+
+test("simulation clock advances independently of movement speed", () => {
+  const slow = createSimulation({ seed: "clock", count: 2 });
+  const fast = createSimulation({ seed: "clock", count: 2 });
+  for (let i = 0; i < 20; i++) {
+    stepSimulation(slow, 0.05, 0.5);
+    stepSimulation(fast, 0.05, 2);
+  }
+  assert.equal(slow.elapsed, fast.elapsed);
+  assert.notDeepEqual(slow.balls.map(b => [b.x, b.y]), fast.balls.map(b => [b.x, b.y]));
+});
