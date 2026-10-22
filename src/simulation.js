@@ -97,7 +97,7 @@ function applyPowerups(sim) {
           const force = 210 * (1 - distance / 165);
           target.vx += nx * force;
           target.vy += ny * force;
-          target.health = Math.max(0, target.health - 12 * sim.damageMultiplier);
+          target.health = Math.max(0, target.health - 12 * sim.damageMultiplier * (target.shieldUntil > sim.elapsed ? 0.35 : 1));
           target.damageFlash = 0.2;
           if (target.health <= 0) eliminate(target, sim.elapsed);
         }
