@@ -446,7 +446,7 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Le vainqueur n'est plus affiché avant 58 secondes lorsque le combat n'a plus qu'un survivant. La mort subite garantit une résolution au plus tard à 65 secondes.
 - Le serveur statique normalise son chemin racine avant de vérifier les chemins demandés. Avant cette correction, la racine pouvait conserver un séparateur final et faire échouer la vérification de préfixe pour toutes les requêtes.
 - Les tests Playwright contrôlent le chargement, le démarrage/pause, le changement de carte, le réglage du nombre de boules et d'obstacles, la seed, l'enregistrement WebM et le ratio vertical mobile.
-- CI complet **confirmé réussi** au commit `0dd141ca839252622bf8656e72485dbf557d2ee2`, exécution [39776830672](https://github.com/Riiddiimz/BallsGame/actions/runs/39776830672) : syntaxe, tests unitaires, test déterministe des piques, installation Chromium et smoke test Playwright réussis.
+- CI complet **confirmé réussi** au commit `6099e4ef8752db3894cc7bb1713df880f0161f73`, exécution [39777107928](https://github.com/Riiddiimz/BallsGame/actions/runs/39777107928) : syntaxe, tests unitaires, test des piques, installation Chromium et smoke test Playwright réussis.
 - Des changements plus récents sur la collision des plateformes et son test déterministe sont poussés sur `main`; leurs exécutions CI doivent être vérifiées avant de les déclarer validés.
 - Le dépôt est développé directement sur `main` conformément à la consigne utilisateur. La PR provisoire `#1` a été fermée sans fusion ; aucun développement futur ne doit être effectué sur la branche existante qui avait servi de source pour transférer les fichiers utiles.
 - **Prochaine action exacte :** récupérer le résultat du CI du commit le plus récent ; corriger tout échec, puis poursuivre les cartes et le pipeline MP4 sans présenter WebM comme MP4.
@@ -468,5 +468,13 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 
 - À partir de quatre obstacles, Néon Grid génère un piège de piques identifiable par sa silhouette et son rendu rose/rouge lumineux.
 - La zone de collision correspond à la hauteur visible des pointes. Un contact inflige 8 points de dégâts (multiplicateur global inclus), déclenche un flash et repousse la boule selon la normale de la surface.
-- Un test déterministe vérifie la présence du piège, les dégâts et le rebond. Le CI du commit `0dd141ca839252622bf8656e72485dbf557d2ee2` valide cette évolution : test unitaire des piques et smoke test navigateur réussis.
+- Un test déterministe vérifie la présence du piège, les dégâts et le rebond. Le CI du commit `6099e4ef8752db3894cc7bb1713df880f0161f73` valide les tests de la carte et du piège de piques ; le test du lave de Magma Pit a également réussi dans ce workflow.
 - **Prochaine action exacte :** vérifier le workflow du dernier commit sur `main`, puis poursuivre les cartes et le format vidéo.
+
+
+## 17. Carte Fosse Magma — 2026-10-22
+
+- Ajout de `magma` au menu des cartes : fond rouge sombre, fosse de lave centrale animée et plateformes secondaires contrôlées par le nombre d'obstacles.
+- La lave inflige 5 points de dégâts par contact (multiplicateur actif inclus) et repousse la boule au contact. Le test unitaire vérifie les dégâts et la direction du rebond.
+- Playwright vérifie que les quatre cartes sont présentes et que Magma Pit peut être sélectionnée. CI complet réussi au commit `6099e4ef8752db3894cc7bb1713df880f0161f73`, run [39777107928](https://github.com/Riiddiimz/BallsGame/actions/runs/39777107928).
+- **Prochaine action exacte :** développer d'autres mécaniques de cartes, puis rendre l'export MP4 fiable sur les navigateurs où `MediaRecorder` ne prend en charge que WebM.
