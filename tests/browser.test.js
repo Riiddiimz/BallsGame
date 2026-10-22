@@ -54,6 +54,11 @@ test("site loads and core combat controls work without browser errors", { timeou
 
     await page.locator("#map-select").selectOption("orbit");
     assert.equal(await page.locator("#timer").textContent(), "00:00");
+    await page.locator("#obstacle-count").evaluate((el) => {
+      el.value = "0";
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    assert.equal(await page.locator("#obstacle-count-value").textContent(), "0");
     await page.locator("#ball-count").evaluate((el) => {
       el.value = "6";
       el.dispatchEvent(new Event("input", { bubbles: true }));
