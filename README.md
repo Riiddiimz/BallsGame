@@ -21,7 +21,7 @@ Run `npm run check`, `npm test`, and `npm run test:e2e` (Playwright + Chromium).
 - Damage doubles at 50 seconds; sudden-death mode starts at 58 seconds and resolves a single winner no later than 65 seconds.
 - Collectible Surge (temporary speed), Shield (damage reduction), and Nova (radial damage/knockback) power-ups, with distinct pickup and active-effect visuals.
 - Health rings, impact flashes, and a double-damage / sudden-death banner.
-- Browser recording through MediaRecorder when supported; current export format is WebM, not MP4.
+- Browser recording starts the selected-seed combat automatically and stops at the end. Native MP4 is preferred when the browser supports it; WebM is the fallback.
 - No third-party runtime dependencies.
 
 This is an initial functional foundation, not a complete implementation of STATE.md acceptance criteria.
