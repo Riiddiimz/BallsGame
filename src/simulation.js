@@ -138,6 +138,7 @@ export function stepSimulation(sim, dt, speed = 1) {
         if (b.health <= 0) eliminate(b, sim.elapsed);
       }
       a.hits++; b.hits++; sim.collisions++;
+      if (!a.alive) break;
     }
   }
   const survivors = sim.balls.filter((ball) => ball.alive);
