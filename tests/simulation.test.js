@@ -97,7 +97,7 @@ test("a lone survivor is not declared winner before 58 seconds", () => {
   sim.balls[1].health = 0;
   sim.balls[2].alive = false;
   sim.balls[2].health = 0;
-  for (let i = 0; i < 1000 && !sim.finished; i++) stepSimulation(sim, 0.05);
+  for (let i = 0; i < 1400 && !sim.finished; i++) stepSimulation(sim, 0.05);
   assert.equal(sim.finished, true);
   assert.ok(sim.elapsed >= 58 && sim.elapsed <= 65);
   assert.equal(sim.winner, sim.balls[0].id);
