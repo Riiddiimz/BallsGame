@@ -420,7 +420,7 @@ La section ci-dessous remplace les anciens champs « à déterminer » pour l'é
 
 ### Limites encore ouvertes
 
-- L'export navigateur actuel est WebM, pas MP4.
+- L'enregistrement préfère MP4 natif si le navigateur le prend en charge et utilise WebM en repli. La conversion MP4 universelle dans Chromium n'est pas implémentée.
 - La mort subite à 65 secondes garantit un seul gagnant en sélectionnant la boule vivante ayant le meilleur état si le combat n'a pas naturellement produit un survivant.
 - La suite Playwright est ajoutée mais ne doit être considérée comme validée qu'après un résultat CI terminé avec succès.
 - La fidélité visuelle, l'accessibilité, la compatibilité navigateur et la sécurité n'ont pas encore fait l'objet d'un audit exhaustif.
@@ -431,7 +431,7 @@ La section ci-dessous remplace les anciens champs « à déterminer » pour l'é
 1. Vérifier le workflow GitHub Actions déclenché depuis `main`, notamment l'installation de Chromium et le smoke test Playwright.
 2. Corriger tout échec observé sans désactiver les assertions.
 3. Ajouter des scénarios de test pour les trois cartes et les cas de fin de combat.
-4. Remplacer l'export WebM par une chaîne MP4 vérifiée, ou documenter précisément les limites techniques si aucun encodeur compatible ne peut être utilisé.
+4. Vérifier le format produit sur les navigateurs cibles et ajouter une conversion MP4 multiplateforme si nécessaire, sans renommer artificiellement un fichier WebM.
 5. Continuer l'implémentation des cartes et du rendu vidéo, en mettant à jour cet état après chaque tâche.
 
 ### Règle Git active
@@ -446,7 +446,19 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Le vainqueur n'est plus affiché avant 58 secondes lorsque le combat n'a plus qu'un survivant. La mort subite garantit une résolution au plus tard à 65 secondes.
 - Le serveur statique normalise son chemin racine avant de vérifier les chemins demandés. Avant cette correction, la racine pouvait conserver un séparateur final et faire échouer la vérification de préfixe pour toutes les requêtes.
 - Les tests Playwright contrôlent le chargement, le démarrage/pause, le changement de carte, le réglage du nombre de boules et d'obstacles, la seed, l'enregistrement WebM et le ratio vertical mobile.
-- Dernier CI complet **confirmé réussi** au commit `dbcbb01c03d4a5eb406785e022e6dd190a53d44c`, exécution [39774864873](https://github.com/Riiddiimz/BallsGame/actions/runs/39774864873) : syntaxe, tests unitaires, installation Chromium et Playwright réussis.
+- Dernier CI complet **confirmé réussi** au commit `6ebed84c7180690e7390f32e16cd5de84859c737`, exécution [39775810514](https://github.com/Riiddiimz/BallsGame/actions/runs/39775810514) : syntaxe, tests unitaires, installation Chromium et Playwright réussis.
 - Des changements plus récents sur la collision des plateformes et son test déterministe sont poussés sur `main`; leurs exécutions CI doivent être vérifiées avant de les déclarer validés.
 - Le dépôt est développé directement sur `main` conformément à la consigne utilisateur. La PR provisoire `#1` a été fermée sans fusion ; aucun développement futur ne doit être effectué sur la branche existante qui avait servi de source pour transférer les fichiers utiles.
 - **Prochaine action exacte :** récupérer le résultat du CI du commit le plus récent ; corriger tout échec, puis poursuivre les cartes et le pipeline MP4 sans présenter WebM comme MP4.
+
+
+## 15. Pouvoirs et enregistrement — 2026-10-22
+
+- Trois pouvoirs sont intégrés au moteur : **Surge** (vitesse augmentée pendant 4 s), **Bouclier** (réduit les dégâts de collision et de Nova pendant 5 s) et **Nova** (impulsion radiale et dégâts aux adversaires proches).
+- Les apparitions sont déterministes à partir de la seed : 7 apparitions planifiées entre 6 s et 51 s, chaque bonus disparaît après 5 s s'il n'est pas ramassé. Le paramètre `powersEnabled` permet de désactiver les pouvoirs pour une simulation.
+- Le rendu affiche les bonus ramassables, leur couleur/symbole, l'aura de vitesse et l'anneau de bouclier. Le menu contient une case à cocher pour activer/désactiver les pouvoirs.
+- L'enregistrement tente maintenant les formats MP4 natifs pris en charge, puis WebM. Le nom de fichier et le statut reflètent le vrai format rapporté par `MediaRecorder`. Le test navigateur attend le téléchargement et vérifie l'extension réelle.
+- Tests unitaires ajoutés pour la seed et le planning des pouvoirs, Surge, Bouclier, Nova, les collisions avec les plateformes et les seuils de 50/58 secondes.
+- Le smoke test Playwright valide le chargement, les commandes, les trois cartes, les réglages, la case des pouvoirs, l'enregistrement/téléchargement et le ratio 9:16 sur mobile.
+- Le workflow CI n'installe plus les paquets système avec `--with-deps`, car cette étape apt a été annulée pendant un téléchargement lent. Chromium est installé directement ; si le runner signale une bibliothèque système manquante, rétablir uniquement les dépendances requises.
+- **Prochaine action exacte :** valider le dernier workflow sur le code incluant le test de téléchargement vidéo, puis ajouter une conversion MP4 fiable pour Chromium si le besoin MP4 doit être garanti sur tous les navigateurs.
