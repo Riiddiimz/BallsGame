@@ -42,12 +42,19 @@ function draw() {
     ctx.fillStyle = "#172e42";ctx.strokeStyle="#59e1f4";ctx.lineWidth=1.5;
     ctx.shadowColor="#59e1f4";ctx.shadowBlur=9;ctx.fillRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);ctx.strokeRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h);ctx.shadowBlur=0;
   }
+  if (sim?.elapsed >= 50 && !sim.finished) {
+    ctx.fillStyle = "rgba(255,72,100,.14)"; ctx.fillRect(8, 8, W-16, 27);
+    ctx.fillStyle = "#ff8294"; ctx.font = "700 11px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(sim.suddenDeath ? "MORT SUBITE — DÉGÂTS ×2" : "DÉGÂTS ×2", W/2, 25);
+  }
   if (sim) for (const ball of sim.balls) {
     if (!ball.alive) continue;
     const g=ctx.createRadialGradient(ball.x-ball.r*.35,ball.y-ball.r*.4,1,ball.x,ball.y,ball.r*1.4);
     g.addColorStop(0,"#ffffff");g.addColorStop(.18,ball.color);g.addColorStop(1,ball.color+"55");
     ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fillStyle=g;ctx.shadowColor=ball.color;ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0;
-    ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r+3,0,Math.PI*2);ctx.strokeStyle=ball.color+"55";ctx.lineWidth=1;ctx.stroke();
+    ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r+3,0,Math.PI*2);ctx.strokeStyle=ball.damageFlash>0?"#ffffff":ball.color+"55";ctx.lineWidth=ball.damageFlash>0?2:1;ctx.stroke();
+    ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r+6,-Math.PI/2,-Math.PI/2+(Math.PI*2*Math.max(0,ball.health)/100));
+    ctx.strokeStyle=ball.health>50?"#7cf7c2":ball.health>25?"#ffce70":"#ff647c";ctx.lineWidth=2.5;ctx.stroke();
   }
   if (sim?.finished && sim.winner !== null) {
     const winner=sim.balls.find(b=>b.id===sim.winner);
