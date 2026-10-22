@@ -48,8 +48,7 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
     obstacles.push({
       x: width * (0.18 + random() * 0.64),
       y: height * (0.18 + random() * 0.64),
-      w, h, kind: "platform",
-      angle: (Math.floor(random() * 3) - 1) * (map === "neon" ? 0.22 : 0)
+      w, h , kind: "platform"
     });
   }
   return { seed: String(seed), map, width, height, balls, obstacles, obstacleCount: safeObstacleCount, elapsed: 0, collisions: 0, finished: false, winner: null, damageMultiplier: 1, suddenDeath: false };
