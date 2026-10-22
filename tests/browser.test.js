@@ -43,7 +43,7 @@ test("site loads and core combat controls work without browser errors", { timeou
 
     await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: "domcontentloaded" });
     assert.match(await page.title(), /BallsGame/);
-    assert.equal(await page.locator("#map-select option").count(), 3);
+    assert.equal(await page.locator("#map-select option").count(), 4);
     assert.equal(await page.locator("#stat-alive").textContent(), "04");
 
     await page.locator("#start").click();
@@ -52,6 +52,8 @@ test("site loads and core combat controls work without browser errors", { timeou
     await page.locator("#start").click();
     assert.equal(await page.locator("#status").textContent(), "PAUSE");
 
+    await page.locator("#map-select").selectOption("magma");
+    assert.equal(await page.locator("#timer").textContent(), "00:00");
     await page.locator("#map-select").selectOption("orbit");
     assert.equal(await page.locator("#timer").textContent(), "00:00");
     await page.locator("#obstacle-count").evaluate((el) => {
