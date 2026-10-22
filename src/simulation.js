@@ -20,7 +20,7 @@ export function createRandom(seed) {
   };
 }
 
-export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon", obstacleCount = 2, width = 360, height = 640 } = {}) {
+export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon", obstacleCount = 2, powersEnabled = true, width = 360, height = 640 } = {}) {
   const random = createRandom(seed);
   const radius = Math.max(8, Math.min(width, height) * 0.023);
   const balls = [];
@@ -33,7 +33,7 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
       x: width * (0.28 + random() * 0.44),
       y: height * (0.28 + random() * 0.44),
       vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      alive: true, hits: 0, health: 100, damageFlash: 0, eliminatedAt: null
+      alive: true, hits: 0, health: 100, damageFlash: 0, eliminatedAt: null, speedBoostUntil: 0, shieldUntil: 0, powerFlash: 0
     });
   }
   const safeObstacleCount = Math.max(0, Math.min(10, Math.floor(Number(obstacleCount) || 0)));
@@ -51,7 +51,18 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
       w, h , kind: "platform"
     });
   }
-  return { seed: String(seed), map, width, height, balls, obstacles, obstacleCount: safeObstacleCount, elapsed: 0, collisions: 0, finished: false, winner: null, damageMultiplier: 1, suddenDeath: false };
+  const powerups = Array.from({ length: 7 }, (_, id) => {
+    const roll = random();
+    return {
+      id,
+      type: roll < 0.34 ? "surge" : roll < 0.67 ? "shield" : "nova",
+      x: width * (0.18 + random() * 0.64),
+      y: height * (0.18 + random() * 0.64),
+      spawnAt: 6 + id * 7.5,
+      collected: false
+    };
+  });
+  return { seed: String(seed), map, width, height, balls, obstacles, obstacleCount: safeObstacleCount, powersEnabled: Boolean(powersEnabled), powerups, elapsed: 0, collisions: 0, finished: false, winner: null, damageMultiplier: 1, suddenDeath: false };
 }
 
 function eliminate(ball, elapsed) {
@@ -59,6 +70,38 @@ function eliminate(ball, elapsed) {
   ball.alive = false;
   ball.eliminatedAt = elapsed;
   ball.damageFlash = 0;
+}
+
+function applyPowerups(sim) {
+  if (!sim.powersEnabled) return;
+  for (const pickup of sim.powerups) {
+    if (pickup.collected || sim.elapsed < pickup.spawnAt) continue;
+    for (const ball of sim.balls) {
+      if (!ball.alive || Math.hypot(ball.x - pickup.x, ball.y - pickup.y) > ball.r + 12) continue;
+      pickup.collected = true;
+      ball.powerFlash = 0.55;
+      if (pickup.type === "surge") {
+        ball.speedBoostUntil = sim.elapsed + 4;
+      } else if (pickup.type === "shield") {
+        ball.shieldUntil = sim.elapsed + 5;
+      } else if (pickup.type === "nova") {
+        for (const target of sim.balls) {
+          if (!target.alive || target.id === ball.id) continue;
+          const dx = target.x - ball.x, dy = target.y - ball.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance >= 165) continue;
+          const nx = dx / (distance || 1), ny = dy / (distance || 1);
+          const force = 210 * (1 - distance / 165);
+          target.vx += nx * force;
+          target.vy += ny * force;
+          target.health = Math.max(0, target.health - 12 * sim.damageMultiplier);
+          target.damageFlash = 0.2;
+          if (target.health <= 0) eliminate(target, sim.elapsed);
+        }
+      }
+      break;
+    }
+  }
 }
 
 function resolveSuddenDeath(sim) {
@@ -89,8 +132,10 @@ export function stepSimulation(sim, dt, speed = 1) {
   for (const ball of sim.balls) {
     if (!ball.alive) continue;
     ball.damageFlash = Math.max(0, ball.damageFlash - step);
-    ball.x += ball.vx * movementStep;
-    ball.y += ball.vy * movementStep;
+    ball.powerFlash = Math.max(0, ball.powerFlash - step);
+    const ballMovementStep = movementStep * (ball.speedBoostUntil > sim.elapsed ? 1.45 : 1);
+    ball.x += ball.vx * ballMovementStep;
+    ball.y += ball.vy * ballMovementStep;
     if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); ball.hits++; sim.collisions++; }
     if (ball.x + ball.r > width) { ball.x = width - ball.r; ball.vx = -Math.abs(ball.vx); ball.hits++; sim.collisions++; }
     if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy = Math.abs(ball.vy); ball.hits++; sim.collisions++; }
@@ -158,8 +203,8 @@ export function stepSimulation(sim, dt, speed = 1) {
         const damage = Math.min(18, 6 + impactSpeed * 0.05) * sim.damageMultiplier;
         a.vx += relative * nx; a.vy += relative * ny;
         b.vx -= relative * nx; b.vy -= relative * ny;
-        a.health = Math.max(0, a.health - damage);
-        b.health = Math.max(0, b.health - damage);
+        a.health = Math.max(0, a.health - damage * (a.shieldUntil > sim.elapsed ? 0.35 : 1));
+        b.health = Math.max(0, b.health - damage * (b.shieldUntil > sim.elapsed ? 0.35 : 1));
         a.damageFlash = 0.16; b.damageFlash = 0.16;
         if (a.health <= 0) eliminate(a, sim.elapsed);
         if (b.health <= 0) eliminate(b, sim.elapsed);
@@ -168,6 +213,7 @@ export function stepSimulation(sim, dt, speed = 1) {
       if (!a.alive) break;
     }
   }
+  applyPowerups(sim);
   const survivors = sim.balls.filter((ball) => ball.alive);
   if (survivors.length === 1 && sim.elapsed >= 58) {
     sim.finished = true;
