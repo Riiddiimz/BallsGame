@@ -77,8 +77,7 @@ function tick(now) {
   if (!running || !sim) return;
   if (!lastFrame) lastFrame=now;
   const dt=Math.min((now-lastFrame)/1000,.05);lastFrame=now;
-  const steps=dt*Number(ui.speed.value);
-  stepSimulation(sim,steps);
+  stepSimulation(sim,dt,Number(ui.speed.value));
   if (sim.finished) {
     running=false;ui.status.textContent="COMBAT TERMINÉ";ui.start.innerHTML="<span>↻</span> Nouveau combat";
   } else ui.status.textContent="COMBAT EN COURS";
