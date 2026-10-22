@@ -157,7 +157,7 @@ export function stepSimulation(sim, dt, speed = 1) {
         }
       } else {
         const left = obstacle.x - obstacle.w / 2, right = obstacle.x + obstacle.w / 2;
-        const top = obstacle.y - obstacle.h / 2, bottom = obstacle.y + obstacle.h / 2;
+        const top = obstacle.kind === "spikes" ? obstacle.y - obstacle.h * 1.8 : obstacle.y - obstacle.h / 2, bottom = obstacle.y + obstacle.h / 2;
         const nearestX = Math.max(left, Math.min(ball.x, right));
         const nearestY = Math.max(top, Math.min(ball.y, bottom));
         let dx = ball.x - nearestX, dy = ball.y - nearestY;
