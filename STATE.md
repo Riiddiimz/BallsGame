@@ -9,10 +9,10 @@
 - **Projet :** BallsGame
 - **Dépôt GitHub :** https://github.com/Riiddiimz/BallsGame
 - **Branche principale :** `main` (métadonnées GitHub vérifiées).
-- **Branche de travail actuelle :** `audit/initial-repository-inventory` (créée pour cet audit).
-- **Dernière mise à jour vérifiée :** 2026-10-22 — audit initial du dépôt distant.
+- **Branche de travail actuelle :** `audit/initial-repository-inventory`.
+- **Dernière mise à jour vérifiée :** 2026-10-22 — création du prototype web initial et des tests.
 - **Dernier commit vérifié avant audit :** `6ff9cde37a58ed2301699f1cd1e030868f1f166c` (`Create SECURITY.md`).
-- **État général :** dépôt accessible, mais code applicatif introuvable via les chemins et outils de lecture disponibles ; audit fonctionnel bloqué jusqu'à localisation du code.
+- **État général :** prototype web initial ajouté sur la branche de travail ; fonctionnalités avancées et validation navigateur encore incomplètes.
 - **Documentation de référence :** ce fichier `STATE.md`.
 
 ### Principes de développement
@@ -438,6 +438,48 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - Diff local : impossible à générer avec les outils disponibles dans cette session. Le changement est limité à `STATE.md` sur la branche d'audit.
 
 ### Session en cours — reprise
-- **Dernière étape réussie :** lecture des trois documents obligatoires, vérification de la branche par défaut et consultation de l'historique des commits.
-- **Blocage :** code applicatif et inventaire complet du dépôt non accessibles via les outils GitHub disponibles ; les fichiers de démarrage usuels interrogés renvoient 404.
-- **Prochaine action exacte :** obtenir un accès de lecture complet à l'arborescence ou confirmer l'URL/le dépôt qui contient le code source de BallsGame. Dès que le code est accessible, reprendre l'audit P0 et réaliser une correction applicative ciblée.
+- **Dernière étape réussie :** prototype applicatif initial, moteur de simulation, tests unitaires et workflow CI ajoutés sur la branche de travail.
+- **Blocage actuel :** le clone Git distant depuis l'environnement d'exécution local échoue car la résolution DNS de github.com est indisponible. Les tests ont été exécutés sur une copie locale de vérification du moteur, pas sur un clone exact du dépôt. Aucun run GitHub Actions n'est visible pour cette branche au moment de la vérification.
+- **Prochaine action exacte :** rétablir l'exécution CI et valider les fichiers exacts de la branche ; ensuite corriger les limites de la simulation (éliminations crédibles, temps réel indépendant de la vitesse, export MP4) et ajouter des tests de parcours navigateur.
+
+
+## 12. Première version applicative — 2026-10-22
+
+### Architecture choisie
+- Application web sans framework, en HTML/CSS/JavaScript ES modules : réduit la complexité et supprime les dépendances runtime initiales.
+- `server.mjs` : serveur HTTP statique Node.js local avec résolution de chemins sous la racine, réponses 404/403 et en-tête `X-Content-Type-Options: nosniff`.
+- `src/simulation.js` : logique de simulation séparée du rendu, générateur pseudo-aléatoire déterministe par seed, boules, rebonds, collisions et fin au plus tard après 60 secondes de simulation.
+- `src/app.js` : interface et rendu Canvas, contrôles de carte, vitesse, seed, démarrage/pause/réinitialisation et capture navigateur via MediaRecorder.
+- `index.html` et `styles.css` : interface responsive conçue autour d'une arène verticale 9:16.
+- `tests/simulation.test.js` : tests natifs Node.js, sans dépendance externe.
+- `.github/workflows/ci.yml` : workflow de vérification syntaxique et de tests sur push, pull request ou déclenchement manuel.
+- `README.md` : instructions de démarrage et de vérification.
+
+### Fonctionnalités ajoutées dans le prototype
+- Trois cartes sélectionnables : Néon Grid, classique et orbite centrale.
+- Configuration de 2 à 8 boules, vitesse et seed.
+- Animation Canvas, rebonds sur les limites, collisions entre boules et obstacles propres aux cartes.
+- Pause/reprise, réinitialisation, chronomètre de simulation et statistiques de collisions.
+- Enregistrement navigateur en WebM lorsque MediaRecorder et captureStream sont pris en charge.
+- **Limites connues :** export MP4 non implémenté ; aucune élimination crédible des boules n'est encore modélisée ; la fin au bout de 60 secondes de simulation n'assure pas une durée réelle de 58–65 secondes ; les tests de navigateur/Playwright n'ont pas été exécutés ; la sécurité et le rendu visuel n'ont pas fait l'objet d'un audit complet.
+
+### Tests et preuve d'exécution
+- Copie locale de vérification créée dans `/tmp/ballsgame` à partir du moteur et des cas de test écrits pour cette version.
+- `npm run check` — réussi sur la copie locale de `src/simulation.js` (contrôle de syntaxe Node.js).
+- `npm test` — 8 tests réussis, 0 échec : reproductibilité d'une seed, différence entre seeds, bornage du nombre de boules, position initiale dans l'arène, avancement temporel, rejet des pas de temps invalides, fin à 60 secondes simulées et déterminisme du générateur aléatoire.
+- **Précision importante :** ces commandes ont été exécutées sur une copie locale de vérification, et non sur un clone exact de la branche GitHub. Le clone Git a échoué avec `Could not resolve host: github.com`; le résultat doit donc être confirmé sur les fichiers exacts de la branche par CI ou dès que le clone est possible.
+- GitHub Actions : aucun run retourné par l'API au moment de la vérification. Le workflow est commité, mais son exécution n'est pas confirmée.
+
+### Historique de réalisation
+| Date | Modification | Commit | Validation |
+|---|---|---|---|
+| 2026-10-22 | Prototype initial, serveur statique, moteur Canvas, tests et workflow CI | Plusieurs commits de fichiers sur `audit/initial-repository-inventory` ; SHA de tête à revérifier | 8 tests réussis sur copie locale ; CI distante non confirmée |
+| 2026-10-22 | Mise à jour de l'état opérationnel | Commit de mise à jour en cours | Vérifier après écriture |
+
+### Feuille de route actualisée
+1. **P0 — Validation du code exact** : vérifier les fichiers de la branche, le contrôle syntaxique de tous les modules et le workflow GitHub Actions.
+2. **P1 — Simulation crédible** : ajouter une mécanique d'élimination clairement définie, un vrai gagnant et des tests de collisions reproductibles.
+3. **P1 — Temps et durée** : distinguer le temps réel écoulé du temps de simulation pour que le compteur affiché reste cohérent avec le temps réel.
+4. **P1 — Tests navigateur** : ajouter Playwright si son installation et son exécution sont disponibles en CI ; tester chargement, sélection de carte, démarrage/pause et erreurs console.
+5. **P1 — Export MP4** : évaluer une chaîne d'export réellement compatible avec le navigateur et le format demandé ; ne pas déclarer WebM comme MP4.
+6. **P2 — Cartes et pouvoirs modulaires** : séparer leurs contrats et étendre progressivement le catalogue après fiabilisation du cœur.
