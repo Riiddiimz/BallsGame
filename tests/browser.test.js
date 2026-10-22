@@ -31,10 +31,10 @@ test("site loads and core combat controls work without browser errors", { timeou
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     page.on("console", (message) => {
-      if (message.type() === "error" && !message.text().includes("fonts.googleapis.com")) errors.push(message.text());
+      if (message.type() === "error" && !message.text().includes("fonts.google")) errors.push(message.text());
     });
 
-    await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: "networkidle" });
+    await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: "domcontentloaded" });
     assert.match(await page.title(), /BallsGame/);
     assert.equal(await page.locator("#map-select option").count(), 3);
     assert.equal(await page.locator("#stat-alive").textContent(), "04");
@@ -55,6 +55,12 @@ test("site loads and core combat controls work without browser errors", { timeou
 
     await page.locator("#random-seed").click();
     assert.match(await page.locator("#seed-display").textContent(), /^SEED: BG-/);
+
+    await page.locator("#record").click();
+    await page.waitForFunction(() => document.querySelector("#status")?.textContent.includes("ENREGISTREMENT"));
+    assert.equal(await page.locator("#stat-state").textContent(), "RUNNING");
+    await page.locator("#record").click();
+    await page.waitForFunction(() => document.querySelector("#record")?.textContent.includes("Enregistrer WebM"), { timeout: 5000 });
     assert.deepEqual(errors, [], `Browser errors: ${errors.join(" | ")}`);
   } finally {
     if (browser) await browser.close();
