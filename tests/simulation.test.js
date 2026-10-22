@@ -192,3 +192,21 @@ test("nova pickup damages and pushes nearby opponents", () => {
   assert.ok(b.health < beforeHealth);
   assert.ok(b.vx > 0);
 });
+
+test("Neon Grid spikes damage balls on contact", () => {
+  const sim = createSimulation({ powersEnabled: false, seed: "spike-contact", count: 2, map: "neon", obstacleCount: 4 });
+  const spikes = sim.obstacles.find(obstacle => obstacle.kind === "spikes");
+  assert.ok(spikes, "fourth Neon Grid obstacle should be a spike trap");
+  const ball = sim.balls[0];
+  ball.x = spikes.x;
+  ball.y = spikes.y - spikes.h * 1.8 - ball.r + 1;
+  ball.vx = 0;
+  ball.vy = 100;
+  sim.balls[1].x = 35;
+  sim.balls[1].y = 35;
+  sim.balls[1].vx = 0;
+  sim.balls[1].vy = 0;
+  stepSimulation(sim, 0.01);
+  assert.equal(ball.health, 92);
+  assert.ok(ball.vy < 0);
+});
