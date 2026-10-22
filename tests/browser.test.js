@@ -67,6 +67,10 @@ test("site loads and core combat controls work without browser errors", { timeou
 
     await page.locator("#random-seed").click();
     assert.match(await page.locator("#seed-display").textContent(), /^SEED: BG-/);
+    await page.locator("#powers-enabled").uncheck();
+    assert.equal(await page.locator("#powers-enabled").isChecked(), false);
+    await page.locator("#powers-enabled").check();
+    assert.equal(await page.locator("#powers-enabled").isChecked(), true);
 
     await page.locator("#record").click();
     await page.waitForFunction(() => document.querySelector("#status")?.textContent.includes("ENREGISTREMENT"));
