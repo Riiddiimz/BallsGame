@@ -59,6 +59,24 @@ function draw() {
     }
     ctx.shadowBlur=0;
   }
+  if (sim?.powersEnabled) {
+    const powerStyle = {
+      surge: { color: "#ffdc66", glyph: "⚡" },
+      shield: { color: "#59e1f4", glyph: "◇" },
+      nova: { color: "#ff78b7", glyph: "✦" }
+    };
+    for (const pickup of sim.powerups) {
+      if (pickup.collected || sim.elapsed < pickup.spawnAt || sim.elapsed > pickup.expiresAt) continue;
+      const style = powerStyle[pickup.type];
+      const pulse = 1 + Math.sin(sim.elapsed * 7 + pickup.id) * 0.12;
+      ctx.beginPath(); ctx.arc(pickup.x, pickup.y, 10 * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = style.color + "24"; ctx.fill();
+      ctx.beginPath(); ctx.arc(pickup.x, pickup.y, 8 * pulse, 0, Math.PI * 2);
+      ctx.strokeStyle = style.color; ctx.lineWidth = 1.8; ctx.shadowColor = style.color; ctx.shadowBlur = 12; ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.fillStyle = style.color; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(style.glyph, pickup.x, pickup.y + 0.5);
+    }
+  }
   if (sim?.elapsed >= 50 && !sim.finished) {
     ctx.fillStyle = "rgba(255,72,100,.14)"; ctx.fillRect(8, 8, W-16, 27);
     ctx.fillStyle = "#ff8294"; ctx.font = "700 11px sans-serif"; ctx.textAlign = "center";
@@ -72,6 +90,18 @@ function draw() {
     ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r+3,0,Math.PI*2);ctx.strokeStyle=ball.damageFlash>0?"#ffffff":ball.color+"55";ctx.lineWidth=ball.damageFlash>0?2:1;ctx.stroke();
     ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r+6,-Math.PI/2,-Math.PI/2+(Math.PI*2*Math.max(0,ball.health)/100));
     ctx.strokeStyle=ball.health>50?"#7cf7c2":ball.health>25?"#ffce70":"#ff647c";ctx.lineWidth=2.5;ctx.stroke();
+    if (ball.shieldUntil > sim.elapsed) {
+      ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r+10,0,Math.PI*2);
+      ctx.strokeStyle="#59e1f4"; ctx.lineWidth=2; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    if (ball.speedBoostUntil > sim.elapsed) {
+      ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r+9,0,Math.PI*2);
+      ctx.strokeStyle="#ffdc66"; ctx.lineWidth=2; ctx.stroke();
+    }
+    if (ball.powerFlash > 0) {
+      ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r+13*(1-ball.powerFlash/0.55),0,Math.PI*2);
+      ctx.strokeStyle="#ff78b7"; ctx.lineWidth=2; ctx.stroke();
+    }
   }
   if (sim?.finished && sim.winner !== null) {
     const winner=sim.balls.find(b=>b.id===sim.winner);
