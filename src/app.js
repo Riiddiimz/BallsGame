@@ -24,7 +24,8 @@ function fitCanvas() {
 function draw() {
   ctx.clearRect(0, 0, W, H);
   const gradient = ctx.createLinearGradient(0, 0, W, H);
-  gradient.addColorStop(0, "#0c1630"); gradient.addColorStop(1, "#080b18");
+  gradient.addColorStop(0, sim?.map === "magma" ? "#32101a" : "#0c1630");
+  gradient.addColorStop(1, sim?.map === "magma" ? "#100711" : "#080b18");
   ctx.fillStyle = gradient; ctx.fillRect(0, 0, W, H);
   if (sim?.map === "neon") {
     ctx.strokeStyle = "rgba(89,225,244,.12)"; ctx.lineWidth = 1;
@@ -34,13 +35,26 @@ function draw() {
     ctx.strokeStyle = "rgba(255,255,255,.055)";
     for (let y=40;y<H;y+=40) {ctx.beginPath();ctx.moveTo(20,y);ctx.lineTo(W-20,y);ctx.stroke();}
   }
-  ctx.strokeStyle = sim?.map === "classic" ? "#45506b" : "#31566b";
+  ctx.strokeStyle = sim?.map === "classic" ? "#45506b" : sim?.map === "magma" ? "#a7433a" : "#31566b";
   ctx.lineWidth = 2; ctx.strokeRect(8, 8, W-16, H-16);
   if (sim?.map === "orbit") {
     ctx.beginPath();ctx.arc(W/2,H/2,W*.105,0,Math.PI*2);ctx.strokeStyle="#a88bff";ctx.lineWidth=3;ctx.shadowColor="#a88bff";ctx.shadowBlur=16;ctx.stroke();ctx.shadowBlur=0;
   }
   if (sim) for (const o of sim.obstacles) {
     if (o.kind === "ring") continue;
+    if (o.kind === "lava") {
+      const lava = ctx.createLinearGradient(o.x, o.y-o.h/2, o.x, o.y+o.h/2);
+      lava.addColorStop(0, "#ff9c48"); lava.addColorStop(0.45, "#ff4b32"); lava.addColorStop(1, "#711b2a");
+      ctx.fillStyle = lava; ctx.strokeStyle = "#ffb05c"; ctx.lineWidth = 2;
+      ctx.shadowColor = "#ff4b32"; ctx.shadowBlur = 20;
+      ctx.beginPath(); ctx.ellipse(o.x, o.y, o.w/2, o.h/2, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+      for (let i = 0; i < 5; i++) {
+        const bx = o.x - o.w*0.38 + i*o.w*0.19;
+        ctx.beginPath(); ctx.ellipse(bx, o.y + Math.sin(sim.elapsed*2+i)*o.h*0.12, o.w*0.035, o.h*0.17, 0, 0, Math.PI*2);
+        ctx.fillStyle = "#ffc56a"; ctx.fill();
+      }
+      continue;
+    }
     if (o.kind === "spikes") {
       const left = o.x - o.w / 2, right = o.x + o.w / 2, base = o.y + o.h / 2;
       const count = Math.max(3, Math.floor(o.w / 12));
