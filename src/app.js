@@ -6,6 +6,7 @@ const ctx = canvas.getContext("2d");
 const ui = {
   map: $("map-select"), count: $("ball-count"), countValue: $("ball-count-value"),
   obstacleCount: $("obstacle-count"), obstacleCountValue: $("obstacle-count-value"),
+  powersEnabled: $("powers-enabled"),
   speed: $("speed"), speedValue: $("speed-value"), seed: $("seed"),
   randomSeed: $("random-seed"), start: $("start"), reset: $("reset"), record: $("record"),
   timer: $("timer"), status: $("status"), overlay: $("overlay"), seedDisplay: $("seed-display"),
@@ -92,7 +93,7 @@ function refreshStats() {
 function formatTime(seconds) { const total=Math.floor(seconds);return String(Math.floor(total/60)).padStart(2,"0")+":"+String(total%60).padStart(2,"0"); }
 function newSimulation() {
   running=false; cancelAnimationFrame(raf);
-  sim=createSimulation({seed:ui.seed.value.trim()||"BALLS-2026",count:Number(ui.count.value),map:ui.map.value,obstacleCount:Number(ui.obstacleCount.value),width:W,height:H});
+  sim=createSimulation({seed:ui.seed.value.trim()||"BALLS-2026",count:Number(ui.count.value),map:ui.map.value,obstacleCount:Number(ui.obstacleCount.value),powersEnabled:ui.powersEnabled.checked,width:W,height:H});
   ui.overlay.hidden=true;ui.status.textContent="PRÊT À LANCER";ui.start.innerHTML="<span>▶</span> Lancer le combat";
   draw();refreshStats();
 }
@@ -119,6 +120,7 @@ ui.start.addEventListener("click",()=>{
 ui.reset.addEventListener("click",()=>{newSimulation();ui.overlay.hidden=false;ui.status.textContent="PRÊT À LANCER";});
 ui.count.addEventListener("input",()=>{ui.countValue.textContent=ui.count.value;newSimulation();});
 ui.obstacleCount.addEventListener("input",()=>{ui.obstacleCountValue.textContent=ui.obstacleCount.value;newSimulation();});
+ui.powersEnabled.addEventListener("change",newSimulation);
 ui.speed.addEventListener("input",()=>{ui.speedValue.textContent=Number(ui.speed.value).toFixed(2).replace(/0$/,"")+"×";});
 ui.map.addEventListener("change",newSimulation);
 ui.seed.addEventListener("change",()=>{ui.seed.value=ui.seed.value.trim().slice(0,40)||"BALLS-2026";newSimulation();});
