@@ -210,3 +210,21 @@ test("Neon Grid spikes damage balls on contact", () => {
   assert.equal(ball.health, 92);
   assert.ok(ball.vy < 0);
 });
+
+test("Magma Pit lava damages balls on contact", () => {
+  const sim = createSimulation({ powersEnabled: false, seed: "lava-contact", count: 2, map: "magma", obstacleCount: 1 });
+  const lava = sim.obstacles[0];
+  assert.equal(lava.kind, "lava");
+  const ball = sim.balls[0];
+  ball.x = lava.x;
+  ball.y = lava.y - lava.h / 2 - ball.r + 1;
+  ball.vx = 0;
+  ball.vy = 100;
+  sim.balls[1].x = 35;
+  sim.balls[1].y = 35;
+  sim.balls[1].vx = 0;
+  sim.balls[1].vy = 0;
+  stepSimulation(sim, 0.01);
+  assert.equal(ball.health, 95);
+  assert.ok(ball.vy < 0);
+});
