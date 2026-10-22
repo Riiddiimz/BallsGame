@@ -59,7 +59,7 @@ test("simulation clock advances independently of movement speed", () => {
 });
 
 test("head-on collisions reduce health and deal double damage after 50 seconds", () => {
-  const normal = createSimulation({ seed: "damage", count: 2 });
+  const normal = createSimulation({ seed: "damage", count: 2, obstacleCount: 0 });
   const doubled = createSimulation({ seed: "damage", count: 2 });
   for (const sim of [normal, doubled]) {
     sim.balls[0].x = 150; sim.balls[0].y = 300; sim.balls[0].vx = 100; sim.balls[0].vy = 0;
@@ -76,7 +76,7 @@ test("head-on collisions reduce health and deal double damage after 50 seconds",
 });
 
 test("a lethal collision eliminates a ball and declares the survivor winner", () => {
-  const sim = createSimulation({ seed: "eliminate", count: 2 });
+  const sim = createSimulation({ seed: "eliminate", count: 2, obstacleCount: 0 });
   const [a, b] = sim.balls;
   a.x = 150; a.y = 300; a.vx = 100; a.vy = 0; a.health = 1;
   b.x = 165; b.y = 300; b.vx = -100; b.vy = 0;
