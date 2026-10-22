@@ -83,6 +83,22 @@ test("a lethal collision eliminates a ball and declares the survivor winner", ()
   stepSimulation(sim, 0.01);
   assert.equal(a.alive, false);
   assert.equal(a.health, 0);
+  assert.equal(sim.finished, false, "winner must not be revealed before 58 seconds");
+  assert.equal(sim.winner, null);
+  for (let i = 0; i < 1200 && !sim.finished; i++) stepSimulation(sim, 0.05);
   assert.equal(sim.finished, true);
+  assert.ok(sim.elapsed >= 58 && sim.elapsed <= 65);
   assert.equal(sim.winner, b.id);
+});
+
+test("a lone survivor is not declared winner before 58 seconds", () => {
+  const sim = createSimulation({ seed: "delayed-victory", count: 3 });
+  sim.balls[1].alive = false;
+  sim.balls[1].health = 0;
+  sim.balls[2].alive = false;
+  sim.balls[2].health = 0;
+  for (let i = 0; i < 1000 && !sim.finished; i++) stepSimulation(sim, 0.05);
+  assert.equal(sim.finished, true);
+  assert.ok(sim.elapsed >= 58 && sim.elapsed <= 65);
+  assert.equal(sim.winner, sim.balls[0].id);
 });
