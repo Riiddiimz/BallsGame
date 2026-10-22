@@ -48,7 +48,7 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
     obstacles.push({
       x: width * (0.18 + random() * 0.64),
       y: height * (0.18 + random() * 0.64),
-      w, h , kind: "platform"
+      w, h, kind: map === "neon" && i % 4 === 3 ? "spikes" : "platform"
     });
   }
   const powerups = Array.from({ length: 7 }, (_, id) => {
@@ -182,8 +182,14 @@ export function stepSimulation(sim, dt, speed = 1) {
             if (dot < 0) { ball.vx -= 2 * dot * exit.nx; ball.vy -= 2 * dot * exit.ny; }
           }
           ball.hits++; sim.collisions++;
+          if (obstacle.kind === "spikes") {
+            ball.health = Math.max(0, ball.health - 8 * sim.damageMultiplier);
+            ball.damageFlash = 0.2;
+            if (ball.health <= 0) eliminate(ball, sim.elapsed);
+          }
         }
       }
+      if (!ball.alive) break;
     }
   }
   for (let i = 0; i < sim.balls.length; i++) {
