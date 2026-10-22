@@ -12,7 +12,7 @@
 - **Branche de travail actuelle :** `audit/initial-repository-inventory`.
 - **Dernière mise à jour vérifiée :** 2026-10-22 — création du prototype web initial et des tests.
 - **Dernier commit vérifié avant audit :** `6ff9cde37a58ed2301699f1cd1e030868f1f166c` (`Create SECURITY.md`).
-- **État général :** prototype web initial ajouté sur la branche de travail ; fonctionnalités avancées et validation navigateur encore incomplètes.
+- **État général :** prototype web initial ajouté ; le compteur de simulation est maintenant séparé du facteur de vitesse de déplacement. Fonctionnalités avancées et validation navigateur encore incomplètes.
 - **Documentation de référence :** ce fichier `STATE.md`.
 
 ### Principes de développement
@@ -438,7 +438,7 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - Diff local : impossible à générer avec les outils disponibles dans cette session. Le changement est limité à `STATE.md` sur la branche d'audit.
 
 ### Session en cours — reprise
-- **Dernière étape réussie :** prototype applicatif initial, moteur de simulation, tests unitaires et workflow CI ajoutés sur la branche de travail.
+- **Dernière étape réussie :** prototype applicatif initial, moteur de simulation, tests unitaires et workflow CI ajoutés ; correction supplémentaire pour séparer le temps écoulé du facteur de vitesse.
 - **Blocage actuel :** le clone Git local échoue car la résolution DNS de github.com est indisponible dans l'environnement local, mais le workflow GitHub Actions a ensuite validé les fichiers exacts de la branche.
 - **Prochaine action exacte :** corriger les limites de la simulation (éliminations crédibles, temps réel indépendant de la vitesse, export MP4) et ajouter des tests de parcours navigateur.
 
@@ -448,10 +448,10 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 ### Architecture choisie
 - Application web sans framework, en HTML/CSS/JavaScript ES modules : réduit la complexité et supprime les dépendances runtime initiales.
 - `server.mjs` : serveur HTTP statique Node.js local avec résolution de chemins sous la racine, réponses 404/403 et en-tête `X-Content-Type-Options: nosniff`.
-- `src/simulation.js` : logique de simulation séparée du rendu, générateur pseudo-aléatoire déterministe par seed, boules, rebonds, collisions et fin au plus tard après 60 secondes de simulation.
+- `src/simulation.js` : logique de simulation séparée du rendu, générateur pseudo-aléatoire déterministe par seed, boules, rebonds, collisions et fin au plus tard après 60 secondes écoulées. Le facteur de vitesse modifie les déplacements, pas le compteur.
 - `src/app.js` : interface et rendu Canvas, contrôles de carte, vitesse, seed, démarrage/pause/réinitialisation et capture navigateur via MediaRecorder.
 - `index.html` et `styles.css` : interface responsive conçue autour d'une arène verticale 9:16.
-- `tests/simulation.test.js` : tests natifs Node.js, sans dépendance externe.
+- `tests/simulation.test.js` : 9 tests natifs Node.js, sans dépendance externe, dont un test qui vérifie que la vitesse ne modifie pas le temps écoulé.
 - `.github/workflows/ci.yml` : workflow de vérification syntaxique et de tests sur push, pull request ou déclenchement manuel.
 - `README.md` : instructions de démarrage et de vérification.
 
@@ -461,14 +461,14 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - Animation Canvas, rebonds sur les limites, collisions entre boules et obstacles propres aux cartes.
 - Pause/reprise, réinitialisation, chronomètre de simulation et statistiques de collisions.
 - Enregistrement navigateur en WebM lorsque MediaRecorder et captureStream sont pris en charge.
-- **Limites connues :** export MP4 non implémenté ; aucune élimination crédible des boules n'est encore modélisée ; la fin au bout de 60 secondes de simulation n'assure pas une durée réelle de 58–65 secondes ; les tests de navigateur/Playwright n'ont pas été exécutés ; la sécurité et le rendu visuel n'ont pas fait l'objet d'un audit complet.
+- **Limites connues :** export MP4 non implémenté ; aucune élimination crédible des boules n'est encore modélisée ; la fin à 60 secondes écoulées est implémentée côté simulation mais le comportement réel doit encore être testé dans un navigateur ; les tests de navigateur/Playwright n'ont pas été exécutés ; la sécurité et le rendu visuel n'ont pas fait l'objet d'un audit complet.
 
 ### Tests et preuve d'exécution
 - Copie locale de vérification créée dans `/tmp/ballsgame` à partir du moteur et des cas de test écrits pour cette version.
 - `npm run check` — réussi sur la copie locale de `src/simulation.js` (contrôle de syntaxe Node.js).
 - `npm test` — 8 tests réussis, 0 échec : reproductibilité d'une seed, différence entre seeds, bornage du nombre de boules, position initiale dans l'arène, avancement temporel, rejet des pas de temps invalides, fin à 60 secondes simulées et déterminisme du générateur aléatoire.
 - **Précision importante :** ces commandes ont été exécutées sur une copie locale de vérification, et non sur un clone exact de la branche GitHub. Le clone Git a échoué avec `Could not resolve host: github.com`; le résultat doit donc être confirmé sur les fichiers exacts de la branche par CI ou dès que le clone est possible.
-- GitHub Actions : workflow `BallsGame CI` réussi sur le commit `6a7710083cf968c2d66a9570998f9f740db881f0` (run [39771932740](https://github.com/Riiddiimz/BallsGame/actions/runs/39771932740)). Les étapes `Check JavaScript syntax` et `Run simulation tests` sont toutes deux réussies sur le code exact commité.
+- GitHub Actions : workflow `BallsGame CI` réussi sur le commit `6a7710083cf968c2d66a9570998f9f740db881f0` (run [39771932740](https://github.com/Riiddiimz/BallsGame/actions/runs/39771932740)). Une correction de l'horloge par rapport à la vitesse a ensuite été committée dans `src/simulation.js`, `src/app.js` et `tests/simulation.test.js` ; le résultat CI de cette correction est en attente de confirmation.
 
 ### Historique de réalisation
 | Date | Modification | Commit | Validation |
@@ -482,3 +482,11 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 4. **P1 — Tests navigateur** : ajouter Playwright si son installation et son exécution sont disponibles en CI ; tester chargement, sélection de carte, démarrage/pause et erreurs console.
 5. **P1 — Export MP4** : évaluer une chaîne d'export réellement compatible avec le navigateur et le format demandé ; ne pas déclarer WebM comme MP4.
 6. **P2 — Cartes et pouvoirs modulaires** : séparer leurs contrats et étendre progressivement le catalogue après fiabilisation du cœur.
+
+
+### Correctif complémentaire — temps et vitesse
+- **Changement :** `stepSimulation(sim, dt, speed)` avance maintenant le temps écoulé de `dt`, tandis que le mouvement utilise `dt × speed`. L'interface transmet le réglage de vitesse séparément.
+- **Test ajouté :** deux simulations de même seed avancées avec des vitesses différentes doivent afficher le même temps écoulé, mais des positions différentes.
+- **Commits des fichiers :** moteur `e462f98858a60434c5ed9137a5d05df264a8a038`, interface `c55bdc5ae94d6390011acdc70168ef80c08d6140`, test `dd226c8e9cf455534f17bf6616346fd2157d7ae0`.
+- **Validation :** le workflow GitHub Actions a été déclenché pour ces commits ; consulter le run le plus récent avant de déclarer ce correctif validé.
+- **Prochaine tâche concrète :** implémenter et tester une vraie mécanique d'élimination et une condition de victoire fiable, puis ajouter un test navigateur pour les contrôles principaux.
