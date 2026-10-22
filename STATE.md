@@ -439,8 +439,8 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 
 ### Session en cours — reprise
 - **Dernière étape réussie :** prototype applicatif initial, moteur de simulation, tests unitaires et workflow CI ajoutés sur la branche de travail.
-- **Blocage actuel :** le clone Git distant depuis l'environnement d'exécution local échoue car la résolution DNS de github.com est indisponible. Les tests ont été exécutés sur une copie locale de vérification du moteur, pas sur un clone exact du dépôt. Aucun run GitHub Actions n'est visible pour cette branche au moment de la vérification.
-- **Prochaine action exacte :** rétablir l'exécution CI et valider les fichiers exacts de la branche ; ensuite corriger les limites de la simulation (éliminations crédibles, temps réel indépendant de la vitesse, export MP4) et ajouter des tests de parcours navigateur.
+- **Blocage actuel :** le clone Git local échoue car la résolution DNS de github.com est indisponible dans l'environnement local, mais le workflow GitHub Actions a ensuite validé les fichiers exacts de la branche.
+- **Prochaine action exacte :** corriger les limites de la simulation (éliminations crédibles, temps réel indépendant de la vitesse, export MP4) et ajouter des tests de parcours navigateur.
 
 
 ## 12. Première version applicative — 2026-10-22
@@ -468,13 +468,13 @@ Ne pas demander une validation utilisateur pour chaque correction locale et rév
 - `npm run check` — réussi sur la copie locale de `src/simulation.js` (contrôle de syntaxe Node.js).
 - `npm test` — 8 tests réussis, 0 échec : reproductibilité d'une seed, différence entre seeds, bornage du nombre de boules, position initiale dans l'arène, avancement temporel, rejet des pas de temps invalides, fin à 60 secondes simulées et déterminisme du générateur aléatoire.
 - **Précision importante :** ces commandes ont été exécutées sur une copie locale de vérification, et non sur un clone exact de la branche GitHub. Le clone Git a échoué avec `Could not resolve host: github.com`; le résultat doit donc être confirmé sur les fichiers exacts de la branche par CI ou dès que le clone est possible.
-- GitHub Actions : aucun run retourné par l'API au moment de la vérification. Le workflow est commité, mais son exécution n'est pas confirmée.
+- GitHub Actions : workflow `BallsGame CI` réussi sur le commit `6a7710083cf968c2d66a9570998f9f740db881f0` (run [39771932740](https://github.com/Riiddiimz/BallsGame/actions/runs/39771932740)). Les étapes `Check JavaScript syntax` et `Run simulation tests` sont toutes deux réussies sur le code exact commité.
 
 ### Historique de réalisation
 | Date | Modification | Commit | Validation |
 |---|---|---|---|
-| 2026-10-22 | Prototype initial, serveur statique, moteur Canvas, tests et workflow CI | Plusieurs commits de fichiers sur `audit/initial-repository-inventory` ; SHA de tête à revérifier | 8 tests réussis sur copie locale ; CI distante non confirmée |
-| 2026-10-22 | Mise à jour de l'état opérationnel | Commit de mise à jour en cours | Vérifier après écriture |
+| 2026-10-22 | Prototype initial, serveur statique, moteur Canvas, tests et workflow CI | Plusieurs commits de fichiers sur `audit/initial-repository-inventory` ; CI confirmée sur `6a7710083cf968c2d66a9570998f9f740db881f0` | CI GitHub réussie : syntaxe + 8 tests unitaires |
+| 2026-10-22 | Mise à jour de l'état opérationnel après résultat CI | À confirmer après écriture | En cours |
 
 ### Feuille de route actualisée
 1. **P0 — Validation du code exact** : vérifier les fichiers de la branche, le contrôle syntaxique de tous les modules et le workflow GitHub Actions.
