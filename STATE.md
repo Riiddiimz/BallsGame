@@ -437,3 +437,16 @@ La section ci-dessous remplace les anciens champs « à déterminer » pour l'é
 ### Règle Git active
 
 La consigne utilisateur la plus récente impose que tout développement futur et tout commit se fasse directement sur `main`. Ne pas créer ni utiliser une autre branche pour le développement. Avant chaque écriture, vérifier l'état actuel de `main`; ne pas réécrire ni supprimer des commits existants.
+
+
+## 14. Évolutions vérifiées sur main — 2026-10-22
+
+- Les réglages de l'arène comprennent maintenant un nombre d'obstacles de 0 à 10. Le moteur borne cette valeur et génère les emplacements à partir de la seed, afin de rendre la disposition reproductible.
+- Les matériaux visuels des plateformes varient selon la carte (Néon Grid, classique, orbite). Les collisions avec une plateforme repoussent la boule selon la normale de la surface, y compris lorsque son centre se retrouve dans la plateforme.
+- Le vainqueur n'est plus affiché avant 58 secondes lorsque le combat n'a plus qu'un survivant. La mort subite garantit une résolution au plus tard à 65 secondes.
+- Le serveur statique normalise son chemin racine avant de vérifier les chemins demandés. Avant cette correction, la racine pouvait conserver un séparateur final et faire échouer la vérification de préfixe pour toutes les requêtes.
+- Les tests Playwright contrôlent le chargement, le démarrage/pause, le changement de carte, le réglage du nombre de boules et d'obstacles, la seed, l'enregistrement WebM et le ratio vertical mobile.
+- Dernier CI complet **confirmé réussi** au commit `dbcbb01c03d4a5eb406785e022e6dd190a53d44c`, exécution [39774864873](https://github.com/Riiddiimz/BallsGame/actions/runs/39774864873) : syntaxe, tests unitaires, installation Chromium et Playwright réussis.
+- Des changements plus récents sur la collision des plateformes et son test déterministe sont poussés sur `main`; leurs exécutions CI doivent être vérifiées avant de les déclarer validés.
+- Le dépôt est développé directement sur `main` conformément à la consigne utilisateur. La PR provisoire `#1` a été fermée sans fusion ; aucun développement futur ne doit être effectué sur la branche existante qui avait servi de source pour transférer les fichiers utiles.
+- **Prochaine action exacte :** récupérer le résultat du CI du commit le plus récent ; corriger tout échec, puis poursuivre les cartes et le pipeline MP4 sans présenter WebM comme MP4.
