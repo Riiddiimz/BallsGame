@@ -118,3 +118,20 @@ test("each map can be created with zero obstacles", () => {
     assert.equal(sim.obstacles.length, 0, map);
   }
 });
+
+test("platform collision reflects a ball away from the impacted face", () => {
+  const sim = createSimulation({ seed: "platform-hit", count: 2, map: "classic", obstacleCount: 1 });
+  const ball = sim.balls[0];
+  const obstacle = sim.obstacles[0];
+  ball.x = obstacle.x;
+  ball.y = obstacle.y - obstacle.h / 2 - ball.r + 1;
+  ball.vx = 0;
+  ball.vy = 100;
+  sim.balls[1].x = 35;
+  sim.balls[1].y = 35;
+  sim.balls[1].vx = 0;
+  sim.balls[1].vy = 0;
+  stepSimulation(sim, 0.01);
+  assert.ok(ball.vy < 0);
+  assert.ok(sim.collisions > 0);
+});
