@@ -490,3 +490,12 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - CI historique confirmé réussi avant cette étape : [run 39777254051](https://github.com/Riiddiimz/BallsGame/actions/runs/39777254051). Les tests de configuration Vercel ajoutés sont en attente de validation par le workflow déclenché par le dernier commit ; ne pas déclarer ce dernier CI réussi avant vérification.
 - **Limite connue :** la configuration GitHub est préparée, mais l'import initial et la validation du déploiement réel dans le compte Vercel nécessitent l'accès au projet Vercel. Un workflow GitHub réussi ne prouve pas à lui seul que le site est déjà publié.
 - **Prochaine action exacte :** vérifier le CI du dernier commit, corriger toute erreur, puis inspecter le déploiement Vercel réel une fois qu'une URL de déploiement est disponible. Ensuite, reprendre les priorités produit : validation plus poussée des combats et amélioration de l'export MP4 au-delà des formats natifs pris en charge par le navigateur.
+
+
+## 19. Test de robustesse multi-cartes — 2026-10-26
+
+- Ajout dans `tests/simulation.test.js` d'un stress test couvrant les quatre cartes (`neon`, `classic`, `orbit`, `magma`), les extrêmes du nombre d'obstacles (0, 1, 4, 10), huit boules, pouvoirs activés et vitesse de mouvement élevée.
+- Le test contrôle à chaque étape que le temps, le nombre de collisions, les positions, les vitesses et les points de vie restent finis, que les points de vie restent bornés, et que chaque simulation se termine avec un seul survivant avant la limite de 65 secondes.
+- Commit : `34242c2efce19d1e7e0a78ac426f9d3b72e90f9f`.
+- Validation CI confirmée réussie sur ce commit : [run 40286808342](https://github.com/Riiddiimz/BallsGame/actions/runs/40286808342). Les étapes de syntaxe, tests unitaires (incluant le stress test), installation Playwright/Chromium et tests navigateur ont toutes réussi.
+- **Prochaine action exacte :** poursuivre la validation produit en ciblant les limites physiques et le parcours d'enregistrement ; conserver une séparation claire entre le format MP4 réellement pris en charge et le repli WebM.
