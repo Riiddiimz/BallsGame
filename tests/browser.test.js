@@ -79,7 +79,9 @@ test("site loads and core combat controls work without browser errors", { timeou
     assert.equal(await page.locator("#stat-state").textContent(), "RUNNING");
     const downloadPromise = page.waitForEvent("download", { timeout: 10000 });
     await page.locator("#record").click();
+    assert.equal(await page.locator("#record").isDisabled(), true, "record button should be locked while the video finalizes");
     await page.waitForFunction(() => document.querySelector("#record")?.textContent.includes("Enregistrer vidéo"), { timeout: 5000 });
+    assert.equal(await page.locator("#record").isDisabled(), false, "record button should be re-enabled after export");
     const videoDownload = await downloadPromise;
     assert.match(videoDownload.suggestedFilename(), /\.(mp4|webm)$/i);
 
