@@ -499,3 +499,14 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Commit : `34242c2efce19d1e7e0a78ac426f9d3b72e90f9f`.
 - Validation CI confirmée réussie sur ce commit : [run 40286808342](https://github.com/Riiddiimz/BallsGame/actions/runs/40286808342). Les étapes de syntaxe, tests unitaires (incluant le stress test), installation Playwright/Chromium et tests navigateur ont toutes réussi.
 - **Prochaine action exacte :** poursuivre la validation produit en ciblant les limites physiques et le parcours d'enregistrement ; conserver une séparation claire entre le format MP4 réellement pris en charge et le repli WebM.
+
+
+## 20. Fiabilité de l'enregistrement — 2026-10-26
+
+- Le gestionnaire d'enregistrement utilise maintenant un enregistreur et un tampon de données locaux à chaque session. Les événements de fin se basent sur le bon objet `MediaRecorder`, au lieu de dépendre de variables globales susceptibles d'être remplacées.
+- La seed utilisée pour nommer la vidéo est capturée au début du combat enregistré ; le téléchargement utilise le type MIME réellement signalé par le navigateur et n'est pas déclenché pour un blob vide.
+- Les pistes de capture sont arrêtées et l'état de l'interface est restauré après une fin normale ou une erreur. Le bouton d'enregistrement est désactivé pendant la finalisation afin d'éviter un redémarrage prématuré.
+- Le test Playwright vérifie maintenant que le bouton est verrouillé pendant la finalisation puis réactivé après l'export.
+- Commits : `329dbfef205c4532bf97a703a1c767108afe67c6` (cycle d'enregistrement), `9e07533aa707c3568f7a6e5cac87f1a029fc1aa3` (nettoyage), `420778770d34b91b05cbdbf6cf2f0f02896ea847` (test navigateur).
+- **Validation en attente :** le workflow CI déclenché par cette modification doit terminer avec succès avant de considérer le correctif validé.
+- **Prochaine action exacte :** vérifier la CI de la dernière révision ; si elle passe, poursuivre l'audit des limites physiques et du parcours vidéo. La conversion MP4 universelle n'est toujours pas fournie : le navigateur peut exporter en WebM si son MediaRecorder ne prend pas en charge MP4.
