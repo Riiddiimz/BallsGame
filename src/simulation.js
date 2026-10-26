@@ -236,24 +236,31 @@ export function stepSimulation(sim, dt, speed = 1) {
   // Ball-ball resolution can push a participant beyond a wall after the first
   // wall pass. Clamp once more so every completed step respects arena bounds.
   for (const ball of sim.balls) {
-    if (!ball.alive) continue;
     if (ball.x < ball.r) {
       ball.x = ball.r;
-      if (ball.vx < 0) ball.vx = Math.abs(ball.vx);
-      ball.hits++; sim.collisions++;
+      if (ball.alive) {
+        if (ball.vx < 0) ball.vx = Math.abs(ball.vx);
+        ball.hits++; sim.collisions++;
+      }
     } else if (ball.x > width - ball.r) {
       ball.x = width - ball.r;
-      if (ball.vx > 0) ball.vx = -Math.abs(ball.vx);
-      ball.hits++; sim.collisions++;
+      if (ball.alive) {
+        if (ball.vx > 0) ball.vx = -Math.abs(ball.vx);
+        ball.hits++; sim.collisions++;
+      }
     }
     if (ball.y < ball.r) {
       ball.y = ball.r;
-      if (ball.vy < 0) ball.vy = Math.abs(ball.vy);
-      ball.hits++; sim.collisions++;
+      if (ball.alive) {
+        if (ball.vy < 0) ball.vy = Math.abs(ball.vy);
+        ball.hits++; sim.collisions++;
+      }
     } else if (ball.y > height - ball.r) {
       ball.y = height - ball.r;
-      if (ball.vy > 0) ball.vy = -Math.abs(ball.vy);
-      ball.hits++; sim.collisions++;
+      if (ball.alive) {
+        if (ball.vy > 0) ball.vy = -Math.abs(ball.vy);
+        ball.hits++; sim.collisions++;
+      }
     }
   }
   applyPowerups(sim);
