@@ -510,3 +510,13 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Commits : `329dbfef205c4532bf97a703a1c767108afe67c6` (cycle d'enregistrement), `9e07533aa707c3568f7a6e5cac87f1a029fc1aa3` (nettoyage), `420778770d34b91b05cbdbf6cf2f0f02896ea847` (test navigateur).
 - **Validation confirmée :** CI complet réussi au commit `434905a1e80060dd4863d879f7f8e78973e52696`, [run 40286950488](https://github.com/Riiddiimz/BallsGame/actions/runs/40286950488). Syntaxe JavaScript, tests unitaires et de configuration Vercel, installation Chromium et tests navigateur ont tous réussi.
 - **Prochaine action exacte :** vérifier la CI de la dernière révision ; si elle passe, poursuivre l'audit des limites physiques et du parcours vidéo. La conversion MP4 universelle n'est toujours pas fournie : le navigateur peut exporter en WebM si son MediaRecorder ne prend pas en charge MP4.
+
+
+## 21. Maintien des boules dans l'arène — 2026-10-26
+
+- Ajustement de la génération des plateformes et des piques pour les garder à distance des limites de l'arène, avec une marge tenant compte du rayon des boules.
+- Ajout d'une seconde résolution des limites après les collisions entre boules : celles-ci pouvaient corriger les positions après le premier contrôle des murs et pousser ponctuellement une boule hors du cadre avant la prochaine frame.
+- Le stress test multi-cartes vérifie désormais les limites horizontales et verticales à chaque étape, pour toutes les cartes, 0/1/4/10 obstacles, huit boules et une vitesse de déplacement élevée.
+- Commits : `e38bd4612deade5c3449c48f36d92c8d3933b19f` (correction moteur), `5dfca1b4ddbda141f66bc5f4ca77f41f4524ffcf` (assertions de bornes).
+- **Validation en attente :** le CI doit confirmer que le test renforcé passe sans régression.
+- **Prochaine action exacte :** inspecter le résultat du dernier CI, corriger tout échec reproductible, puis continuer les vérifications d'enregistrement et d'export vidéo.
