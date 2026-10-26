@@ -12,7 +12,7 @@ const ui = {
   timer: $("timer"), status: $("status"), overlay: $("overlay"), seedDisplay: $("seed-display"),
   fights: $("stat-fights"), alive: $("stat-alive"), hits: $("stat-hits"), state: $("stat-state")
 };
-let sim = null, running = false, raf = 0, lastFrame = 0, fights = 0, recorder = null, recordingChunks = [];
+let sim = null, running = false, raf = 0, lastFrame = 0, fights = 0, recorder = null;
 const W = 360, H = 640;
 
 function fitCanvas() {
