@@ -518,7 +518,7 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Ajout d'une seconde résolution des limites après les collisions entre boules : celles-ci pouvaient corriger les positions après le premier contrôle des murs et pousser ponctuellement une boule hors du cadre avant la prochaine frame.
 - Le stress test multi-cartes vérifie désormais les limites horizontales et verticales à chaque étape, pour toutes les cartes, 0/1/4/10 obstacles, huit boules et une vitesse de déplacement élevée.
 - Commits : `e38bd4612deade5c3449c48f36d92c8d3933b19f` (correction moteur), `5dfca1b4ddbda141f66bc5f4ca77f41f4524ffcf` (assertions de bornes).
-- **Validation en attente :** le CI doit confirmer que le test renforcé passe sans régression.
+- **Validation confirmée :** CI complet réussi sur le correctif, [run 40287137618](https://github.com/Riiddiimz/BallsGame/actions/runs/40287137618) ; les tests unitaires, le stress test de bornes, l'installation Chromium et Playwright ont réussi.
 - **Prochaine action exacte :** inspecter le résultat du dernier CI, corriger tout échec reproductible, puis continuer les vérifications d'enregistrement et d'export vidéo.
 
 
@@ -527,4 +527,4 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Le premier test strict de bornes a échoué sur une boule éliminée qui avait conservé une position verticale hors arène après la résolution d'une collision. Les boules vivantes étaient déjà corrigées ; l'état des boules éliminées restait incohérent.
 - Correction : la passe finale de bornage repositionne maintenant également les boules éliminées, sans modifier leur vitesse, leur nombre de collisions ou appliquer de physique à ces participants morts.
 - Commit correctif : `3f8b1b6465b8cbf5f62879ff20f6141ba3d9ea26`.
-- **Validation en attente :** relancer la CI complète sur le correctif et les assertions strictes de bornes ; ne pas considérer la correction comme validée avant le résultat.
+- **Validation confirmée :** CI complet réussi au commit `6e27b6a84bddfae21974af685fa310bd503fc597`, [run 40287137618](https://github.com/Riiddiimz/BallsGame/actions/runs/40287137618). Les assertions strictes de bornes et les tests navigateur ont réussi.
