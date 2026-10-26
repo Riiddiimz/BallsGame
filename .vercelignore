@@ -1,0 +1,10 @@
+.git/
+.github/
+tests/
+node_modules/
+server.mjs
+package.json
+package-lock.json
+npm-shrinkwrap.json
+README.md
+STATE.md
