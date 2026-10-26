@@ -228,3 +228,34 @@ test("Magma Pit lava damages balls on contact", () => {
   assert.equal(ball.health, 95);
   assert.ok(ball.vy < 0);
 });
+
+
+test("stress test keeps every map finite at obstacle extremes and high movement speed", () => {
+  const maps = ["neon", "classic", "orbit", "magma"];
+  const obstacleCounts = [0, 1, 4, 10];
+  for (const map of maps) {
+    for (const obstacleCount of obstacleCounts) {
+      const sim = createSimulation({
+        seed: `stress-${map}-${obstacleCount}`,
+        count: 8,
+        map,
+        obstacleCount,
+        powersEnabled: true
+      });
+      for (let frame = 0; frame < 1400 && !sim.finished; frame++) {
+        stepSimulation(sim, 0.05, 2.4);
+        assert.ok(Number.isFinite(sim.elapsed), `${map}/${obstacleCount}: elapsed must remain finite`);
+        assert.ok(Number.isFinite(sim.collisions), `${map}/${obstacleCount}: collision count must remain finite`);
+        for (const ball of sim.balls) {
+          for (const key of ["x", "y", "vx", "vy", "health"]) {
+            assert.ok(Number.isFinite(ball[key]), `${map}/${obstacleCount}: ball ${ball.id} ${key} must remain finite`);
+          }
+          assert.ok(ball.health >= 0 && ball.health <= 100, `${map}/${obstacleCount}: health must remain bounded`);
+        }
+      }
+      assert.equal(sim.finished, true, `${map}/${obstacleCount}: combat must finish before the deadline`);
+      assert.ok(sim.elapsed <= 65.1, `${map}/${obstacleCount}: combat exceeded its time limit`);
+      assert.equal(sim.balls.filter(ball => ball.alive).length, 1, `${map}/${obstacleCount}: exactly one winner must survive`);
+    }
+  }
+});
