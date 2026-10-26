@@ -182,23 +182,81 @@ ui.speed.addEventListener("input",()=>{ui.speedValue.textContent=Number(ui.speed
 ui.map.addEventListener("change",newSimulation);
 ui.seed.addEventListener("change",()=>{ui.seed.value=ui.seed.value.trim().slice(0,40)||"BALLS-2026";newSimulation();});
 ui.randomSeed.addEventListener("click",()=>{ui.seed.value="BG-"+Math.random().toString(36).slice(2,10).toUpperCase();newSimulation();});
-ui.record.addEventListener("click",async()=>{
-  if (recorder?.state==="recording") {recorder.stop();return;}
-  if (!canvas.captureStream || !window.MediaRecorder) {ui.status.textContent="ENREGISTREMENT NON DISPONIBLE";return;}
+ui.record.addEventListener("click", () => {
+  if (recorder?.state === "recording") {
+    ui.record.disabled = true;
+    ui.record.textContent = "Finalisation vidéo…";
+    recorder.stop();
+    return;
+  }
+  if (!canvas.captureStream || !window.MediaRecorder) {
+    ui.status.textContent = "ENREGISTREMENT NON DISPONIBLE";
+    return;
+  }
+
+  let stream = null;
+  let activeRecorder = null;
   try {
-    const stream=canvas.captureStream(30);
-    const mime=["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"].find(type=>MediaRecorder.isTypeSupported(type));
-    recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);recordingChunks=[];
-    recorder.ondataavailable=(event)=>{if(event.data.size)recordingChunks.push(event.data);};
-    recorder.onstop=()=>{const mimeType=recorder.mimeType||"video/webm";const isMp4=mimeType.toLowerCase().includes("mp4");const extension=isMp4?"mp4":"webm";const blob=new Blob(recordingChunks,{type:mimeType});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="ballsgame-"+(sim?.seed||"combat")+"."+extension;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);ui.record.textContent="● Enregistrer vidéo";ui.status.textContent="VIDÉO "+extension.toUpperCase()+" EXPORTÉE";stream.getTracks().forEach(track=>track.stop());};
-    recorder.start();
+    stream = canvas.captureStream(30);
+    const mime = [
+      "video/mp4;codecs=avc1.42E01E",
+      "video/mp4",
+      "video/webm;codecs=vp9",
+      "video/webm;codecs=vp8",
+      "video/webm"
+    ].find((type) => MediaRecorder.isTypeSupported(type));
+
+    activeRecorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+    recorder = activeRecorder;
+    const chunks = [];
+    activeRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) chunks.push(event.data);
+    };
+    activeRecorder.onstop = () => {
+      const mimeType = activeRecorder.mimeType || "video/webm";
+      const extension = mimeType.toLowerCase().includes("mp4") ? "mp4" : "webm";
+      const blob = new Blob(chunks, { type: mimeType });
+      if (blob.size > 0) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "ballsgame-" + recordedSeed + "." + extension;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      stream.getTracks().forEach((track) => track.stop());
+      if (recorder === activeRecorder) recorder = null;
+      ui.record.disabled = false;
+      ui.record.textContent = "● Enregistrer vidéo";
+      ui.status.textContent = running ? "COMBAT EN COURS" : "VIDÉO " + extension.toUpperCase() + " EXPORTÉE";
+    };
+    activeRecorder.onerror = () => {
+      stream?.getTracks().forEach((track) => track.stop());
+      if (recorder === activeRecorder) recorder = null;
+      ui.record.disabled = false;
+      ui.record.textContent = "● Enregistrer vidéo";
+      ui.status.textContent = "ÉCHEC DE L’ENREGISTREMENT";
+    };
+
     newSimulation();
-    running=true;fights++;lastFrame=0;raf=requestAnimationFrame(tick);
-    ui.start.innerHTML="Ⅱ Mettre en pause";
-    ui.record.textContent="■ Arrêter l’enregistrement";
-    ui.status.textContent="ENREGISTREMENT — COMBAT EN COURS";
+    const recordedSeed = sim?.seed || "combat";
+    activeRecorder.start();
+    running = true;
+    fights++;
+    lastFrame = 0;
+    raf = requestAnimationFrame(tick);
+    ui.start.innerHTML = "Ⅱ Mettre en pause";
+    ui.record.disabled = false;
+    ui.record.textContent = "■ Arrêter l’enregistrement";
+    ui.status.textContent = "ENREGISTREMENT — COMBAT EN COURS";
     refreshStats();
-  } catch {ui.status.textContent="ÉCHEC DE L’ENREGISTREMENT";}
+  } catch {
+    stream?.getTracks().forEach((track) => track.stop());
+    if (recorder === activeRecorder) recorder = null;
+    ui.record.disabled = false;
+    ui.record.textContent = "● Enregistrer vidéo";
+    ui.status.textContent = "ÉCHEC DE L’ENREGISTREMENT";
+  }
 });
 window.addEventListener("resize",fitCanvas);
 newSimulation();ui.overlay.hidden=false;fitCanvas();
