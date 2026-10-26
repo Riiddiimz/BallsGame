@@ -520,3 +520,11 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - Commits : `e38bd4612deade5c3449c48f36d92c8d3933b19f` (correction moteur), `5dfca1b4ddbda141f66bc5f4ca77f41f4524ffcf` (assertions de bornes).
 - **Validation en attente :** le CI doit confirmer que le test renforcé passe sans régression.
 - **Prochaine action exacte :** inspecter le résultat du dernier CI, corriger tout échec reproductible, puis continuer les vérifications d'enregistrement et d'export vidéo.
+
+
+## 22. Correction révélée par le stress test — 2026-10-26
+
+- Le premier test strict de bornes a échoué sur une boule éliminée qui avait conservé une position verticale hors arène après la résolution d'une collision. Les boules vivantes étaient déjà corrigées ; l'état des boules éliminées restait incohérent.
+- Correction : la passe finale de bornage repositionne maintenant également les boules éliminées, sans modifier leur vitesse, leur nombre de collisions ou appliquer de physique à ces participants morts.
+- Commit correctif : `3f8b1b6465b8cbf5f62879ff20f6141ba3d9ea26`.
+- **Validation en attente :** relancer la CI complète sur le correctif et les assertions strictes de bornes ; ne pas considérer la correction comme validée avant le résultat.
