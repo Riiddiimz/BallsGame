@@ -251,6 +251,8 @@ test("stress test keeps every map finite at obstacle extremes and high movement 
             assert.ok(Number.isFinite(ball[key]), `${map}/${obstacleCount}: ball ${ball.id} ${key} must remain finite`);
           }
           assert.ok(ball.health >= 0 && ball.health <= 100, `${map}/${obstacleCount}: health must remain bounded`);
+          assert.ok(ball.x >= ball.r - 1e-6 && ball.x <= sim.width - ball.r + 1e-6, `${map}/${obstacleCount}: ball ${ball.id} escaped horizontal arena bounds`);
+          assert.ok(ball.y >= ball.r - 1e-6 && ball.y <= sim.height - ball.r + 1e-6, `${map}/${obstacleCount}: ball ${ball.id} escaped vertical arena bounds`);
         }
       }
       assert.equal(sim.finished, true, `${map}/${obstacleCount}: combat must finish before the deadline`);
