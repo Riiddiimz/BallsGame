@@ -3,11 +3,20 @@
 Prototype web app for configuring and watching short vertical ball-combat simulations.
 
 ## Requirements
-- Node.js 20 or newer
+- Node.js 20 or newer for local development and tests
 - No runtime npm dependencies
 
 ## Run locally
 Run `npm start`, then open http://127.0.0.1:4173.
+
+## Deploy to Vercel
+1. Import `Riiddiimz/BallsGame` from GitHub at https://vercel.com/new.
+2. Select the repository's `main` branch.
+3. The repository's `vercel.json` explicitly configures the project as a static site (`framework: null`), with no build or install command and the repository root as the output directory.
+4. Keep the project Root Directory at `./`. If the dashboard displays overrides, choose **Other** and clear the Build Command and Install Command. The `.vercelignore` file excludes tests, documentation, the local Node development server and the package manifest from the published output.
+5. Deploy. Subsequent pushes to `main` should trigger production deployments automatically when the Git integration is connected.
+
+The production page runs the simulation in the browser; `server.mjs` is only for local development and is not a long-running Vercel server. Browser recording depends on the formats supported by that browser: MP4 is used when native MediaRecorder support exists, otherwise the exported file is WebM.
 
 ## Checks
 Run `npm run check`, `npm test`, and `npm run test:e2e` (Playwright + Chromium).
