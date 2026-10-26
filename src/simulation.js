@@ -49,10 +49,16 @@ export function createSimulation({ seed = "BALLS-2026", count = 4, map = "neon",
     }
     const w = width * (0.14 + random() * 0.17);
     const h = 5 + random() * 5;
+    const kind = map === "neon" && i % 4 === 3 ? "spikes" : "platform";
+    const minX = w / 2 + radius + 8;
+    const maxX = width - minX;
+    const topExtent = kind === "spikes" ? h * 1.8 : h / 2;
+    const minY = topExtent + radius + 8;
+    const maxY = height - h / 2 - radius - 8;
     obstacles.push({
-      x: width * (0.18 + random() * 0.64),
-      y: height * (0.18 + random() * 0.64),
-      w, h, kind: map === "neon" && i % 4 === 3 ? "spikes" : "platform"
+      x: Math.max(minX, Math.min(maxX, width * (0.18 + random() * 0.64))),
+      y: Math.max(minY, Math.min(maxY, height * (0.18 + random() * 0.64))),
+      w, h, kind
     });
   }
   const powerups = Array.from({ length: 7 }, (_, id) => {
@@ -225,6 +231,29 @@ export function stepSimulation(sim, dt, speed = 1) {
       }
       a.hits++; b.hits++; sim.collisions++;
       if (!a.alive) break;
+    }
+  }
+  // Ball-ball resolution can push a participant beyond a wall after the first
+  // wall pass. Clamp once more so every completed step respects arena bounds.
+  for (const ball of sim.balls) {
+    if (!ball.alive) continue;
+    if (ball.x < ball.r) {
+      ball.x = ball.r;
+      if (ball.vx < 0) ball.vx = Math.abs(ball.vx);
+      ball.hits++; sim.collisions++;
+    } else if (ball.x > width - ball.r) {
+      ball.x = width - ball.r;
+      if (ball.vx > 0) ball.vx = -Math.abs(ball.vx);
+      ball.hits++; sim.collisions++;
+    }
+    if (ball.y < ball.r) {
+      ball.y = ball.r;
+      if (ball.vy < 0) ball.vy = Math.abs(ball.vy);
+      ball.hits++; sim.collisions++;
+    } else if (ball.y > height - ball.r) {
+      ball.y = height - ball.r;
+      if (ball.vy > 0) ball.vy = -Math.abs(ball.vy);
+      ball.hits++; sim.collisions++;
     }
   }
   applyPowerups(sim);
