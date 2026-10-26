@@ -478,3 +478,15 @@ La consigne utilisateur la plus récente impose que tout développement futur et
 - La lave inflige 5 points de dégâts par contact (multiplicateur actif inclus) et repousse la boule au contact. Le test unitaire vérifie les dégâts et la direction du rebond.
 - Playwright vérifie que les quatre cartes sont présentes et que Magma Pit peut être sélectionnée. CI complet réussi au commit `6099e4ef8752db3894cc7bb1713df880f0161f73`, run [39777107928](https://github.com/Riiddiimz/BallsGame/actions/runs/39777107928).
 - **Prochaine action exacte :** développer d'autres mécaniques de cartes, puis rendre l'export MP4 fiable sur les navigateurs où `MediaRecorder` ne prend en charge que WebM.
+
+
+## 18. Déploiement Vercel statique — 2026-10-26
+
+- Ajout de `vercel.json` directement sur `main` : `framework: null` (preset Other), commandes de build et d'installation nulles, sortie statique à la racine (`.`). Cette configuration évite que la détection automatique liée au `package.json` impose un runtime Node pour le site navigateur.
+- Ajout de `.vercelignore` pour exclure du déploiement les tests, le workflow GitHub, le serveur Node local, les manifestes npm et la documentation opérationnelle ; les fichiers utilisés par le navigateur restent inclus.
+- Documentation de l'import GitHub/Vercel ajoutée au README.
+- Ajout de `tests/deployment-config.test.js` et intégration dans `npm test` pour empêcher une régression de la configuration Vercel et vérifier que les sources navigateur ne sont pas ignorées.
+- Commits de cette étape : configuration Vercel `01ed2854e86b8b2d7ba2d6b0c9363314cd9277fc`, exclusions `f500c70914bd4ff0168d679073f5831d9b0a2a66`, test `85ff2fc866d8dad5a27c2d679cba041afde1c672`, script de test `1829abfd4419e0c20ea28ac4f8c163fc7f542762`, README `802e16634894e65d913d6ff1277cec1cf0826aab`.
+- CI historique confirmé réussi avant cette étape : [run 39777254051](https://github.com/Riiddiimz/BallsGame/actions/runs/39777254051). Les tests de configuration Vercel ajoutés sont en attente de validation par le workflow déclenché par le dernier commit ; ne pas déclarer ce dernier CI réussi avant vérification.
+- **Limite connue :** la configuration GitHub est préparée, mais l'import initial et la validation du déploiement réel dans le compte Vercel nécessitent l'accès au projet Vercel. Un workflow GitHub réussi ne prouve pas à lui seul que le site est déjà publié.
+- **Prochaine action exacte :** vérifier le CI du dernier commit, corriger toute erreur, puis inspecter le déploiement Vercel réel une fois qu'une URL de déploiement est disponible. Ensuite, reprendre les priorités produit : validation plus poussée des combats et amélioration de l'export MP4 au-delà des formats natifs pris en charge par le navigateur.
